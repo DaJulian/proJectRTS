@@ -1,0 +1,18 @@
+NumberofTiles      7
+NumberofUnits      3
+NumberofBuildings  1
+NumberofObstacles  6
+NumberofEntities   6
+
+Unit0Specifications Units/Slime/specifications.txt
+Unit1Specifications Units/BoneMage/specifications.txt
+Unit2Specifications Units/Druffkloppa/specifications.txt
+
+Building0specifications Buildings/MainBuilding/specifications.txt
+
+Entity0Specifications Entities/Entity0/specifications.txt
+Entity1Specifications Entities/Entity1/specifications.txt
+Entity2Specifications Entities/Entity2/specifications.txt
+Entity3Specifications Entities/Entity3/specifications.txt
+Entity4Specifications Entities/Entity4/specifications.txt
+Entity5Specifications Entities/Entity5/specifications.txt

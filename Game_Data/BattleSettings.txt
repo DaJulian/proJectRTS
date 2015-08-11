@@ -1,0 +1,7 @@
+money		1000
+sectorWIDTH	10
+sectorHEIGHT 	10
+player1X	38
+player1Y	38
+player2X	2
+player2Y	2

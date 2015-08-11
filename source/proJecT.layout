@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Debug" />
+	<File name="cFramework.cpp" open="1" top="1" tabpos="11">
+		<Cursor position="928" topLine="9" />
+	</File>
+	<File name="cFramework.h" open="1" top="0" tabpos="10">
+		<Cursor position="470" topLine="0" />
+	</File>
+	<File name="control/cBattleGame.cpp" open="1" top="0" tabpos="50">
+		<Cursor position="2135" topLine="0" />
+	</File>
+	<File name="control/cBattleGame.h" open="1" top="0" tabpos="49">
+		<Cursor position="264" topLine="30" />
+	</File>
+	<File name="control/cControl.cpp" open="1" top="0" tabpos="20">
+		<Cursor position="10838" topLine="0" />
+	</File>
+	<File name="control/cControl.h" open="1" top="0" tabpos="19">
+		<Cursor position="264" topLine="0" />
+	</File>
+	<File name="control/cPathFind.cpp" open="1" top="0" tabpos="27">
+		<Cursor position="9224" topLine="267" />
+	</File>
+	<File name="control/cPathFind.h" open="1" top="0" tabpos="26">
+		<Cursor position="291" topLine="0" />
+	</File>
+	<File name="control/cPathKnot.cpp" open="1" top="0" tabpos="25">
+		<Cursor position="9465" topLine="382" />
+	</File>
+	<File name="control/cPathKnot.h" open="1" top="0" tabpos="24">
+		<Cursor position="1752" topLine="0" />
+	</File>
+	<File name="control/cReplay.cpp" open="1" top="0" tabpos="44">
+		<Cursor position="428" topLine="9" />
+	</File>
+	<File name="control/cReplay.h" open="1" top="0" tabpos="43">
+		<Cursor position="96" topLine="0" />
+	</File>
+	<File name="control/cSelection.cpp" open="1" top="0" tabpos="16">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="control/cSelection.h" open="1" top="0" tabpos="15">
+		<Cursor position="118" topLine="0" />
+	</File>
+	<File name="control/cSelectionControl.cpp" open="1" top="0" tabpos="18">
+		<Cursor position="6847" topLine="103" />
+	</File>
+	<File name="control/cSelectionControl.h" open="1" top="0" tabpos="17">
+		<Cursor position="806" topLine="3" />
+	</File>
+	<File name="global.h" open="1" top="0" tabpos="14">
+		<Cursor position="6236" topLine="104" />
+	</File>
+	<File name="main.cpp" open="1" top="0" tabpos="1">
+		<Cursor position="122" topLine="32" />
+	</File>
+	<File name="model/cAnimation.cpp" open="1" top="0" tabpos="29">
+		<Cursor position="1624" topLine="0" />
+	</File>
+	<File name="model/cAnimation.h" open="1" top="0" tabpos="28">
+		<Cursor position="556" topLine="0" />
+	</File>
+	<File name="model/cBuilding.cpp" open="1" top="0" tabpos="53">
+		<Cursor position="973" topLine="41" />
+	</File>
+	<File name="model/cBuilding.h" open="1" top="0" tabpos="52">
+		<Cursor position="363" topLine="0" />
+	</File>
+	<File name="model/cEntity.cpp" open="1" top="0" tabpos="45">
+		<Cursor position="1878" topLine="60" />
+	</File>
+	<File name="model/cEntity.h" open="1" top="0" tabpos="46">
+		<Cursor position="1073" topLine="0" />
+	</File>
+	<File name="model/cObject.cpp" open="1" top="0" tabpos="4">
+		<Cursor position="328" topLine="13" />
+	</File>
+	<File name="model/cObject.h" open="1" top="0" tabpos="13">
+		<Cursor position="128" topLine="0" />
+	</File>
+	<File name="model/cObstacle.cpp" open="1" top="0" tabpos="33">
+		<Cursor position="326" topLine="0" />
+	</File>
+	<File name="model/cObstacle.h" open="1" top="0" tabpos="32">
+		<Cursor position="193" topLine="0" />
+	</File>
+	<File name="model/cSector.h" open="1" top="0" tabpos="51">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="model/cTile.cpp" open="1" top="0" tabpos="5">
+		<Cursor position="1056" topLine="43" />
+	</File>
+	<File name="model/cTile.h" open="1" top="0" tabpos="12">
+		<Cursor position="93" topLine="0" />
+	</File>
+	<File name="model/cUnit.cpp" open="1" top="0" tabpos="23">
+		<Cursor position="47324" topLine="241" />
+	</File>
+	<File name="model/cUnit.h" open="1" top="0" tabpos="22">
+		<Cursor position="3564" topLine="81" />
+	</File>
+	<File name="model/cWorldMap.cpp" open="1" top="0" tabpos="6">
+		<Cursor position="464" topLine="0" />
+	</File>
+	<File name="model/cWorldMap.h" open="1" top="0" tabpos="7">
+		<Cursor position="139" topLine="0" />
+	</File>
+	<File name="netControl/cNetControl.cpp" open="1" top="0" tabpos="39">
+		<Cursor position="667" topLine="18" />
+	</File>
+	<File name="netControl/cNetControl.h" open="1" top="0" tabpos="42">
+		<Cursor position="187" topLine="0" />
+	</File>
+	<File name="netControl/cPackageSender.cpp" open="1" top="0" tabpos="36">
+		<Cursor position="381" topLine="0" />
+	</File>
+	<File name="netControl/cPackageSender.h" open="1" top="0" tabpos="35">
+		<Cursor position="115" topLine="0" />
+	</File>
+	<File name="netControl/oComdCntrList.cpp" open="1" top="0" tabpos="41">
+		<Cursor position="1595" topLine="54" />
+	</File>
+	<File name="netControl/oComdCntrList.h" open="1" top="0" tabpos="40">
+		<Cursor position="66" topLine="29" />
+	</File>
+	<File name="netControl/oNetPackages.cpp" open="1" top="0" tabpos="38">
+		<Cursor position="867" topLine="25" />
+	</File>
+	<File name="netControl/oNetPackages.h" open="1" top="0" tabpos="37">
+		<Cursor position="111" topLine="0" />
+	</File>
+	<File name="tools.cpp" open="1" top="0" tabpos="48">
+		<Cursor position="1928" topLine="80" />
+	</File>
+	<File name="tools.h" open="1" top="0" tabpos="47">
+		<Cursor position="436" topLine="0" />
+	</File>
+	<File name="view/cEvent.cpp" open="1" top="0" tabpos="30">
+		<Cursor position="879" topLine="40" />
+	</File>
+	<File name="view/cEvent.h" open="1" top="0" tabpos="34">
+		<Cursor position="528" topLine="0" />
+	</File>
+	<File name="view/cOutput.cpp" open="1" top="0" tabpos="9">
+		<Cursor position="7721" topLine="239" />
+	</File>
+	<File name="view/cOutput.h" open="1" top="0" tabpos="8">
+		<Cursor position="207" topLine="9" />
+	</File>
+	<File name="view/cSurface.cpp" open="1" top="0" tabpos="31">
+		<Cursor position="1546" topLine="3" />
+	</File>
+	<File name="view/cSurface.h" open="1" top="0" tabpos="21">
+		<Cursor position="140" topLine="0" />
+	</File>
+	<File name="view/cView.cpp" open="1" top="0" tabpos="2">
+		<Cursor position="13953" topLine="567" />
+	</File>
+	<File name="view/cView.h" open="1" top="0" tabpos="3">
+		<Cursor position="2403" topLine="93" />
+	</File>
+</CodeBlocks_layout_file>

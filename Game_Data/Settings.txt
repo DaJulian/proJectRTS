@@ -1,0 +1,6 @@
+GraphicSettingsFile: GraphicsSettings.txt
+UnitSettingsFile:    UnitSettings.txt
+MapSettingsFile:     Map.txt
+InputSettingsFile:   InputSettings.txt
+NetSettingsFile:     NetSettings.txt
+BattleGameScreen:    BattleSettings.txt

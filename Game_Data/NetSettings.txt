@@ -1,0 +1,5 @@
+Mode		0
+IP-Adress	192.168.178.42
+Port		3700
+ReplayFile	Replay.rep
+ThisUserID	1

@@ -1,0 +1,26 @@
+Program starting 
+
+../../Game_Data1/GraphicsSettings.txt
+../../Game_Data1/UnitSettings.txt
+../../Game_Data1/Map.txt
+../../Game_Data1/InputSettings.txt
+../../Game_Data1/NetSettings.txt
+controlSettings0
+
+
+TILE_TYPE_NUMBER 0
+UNIT_TYPE_NUMBER 0
+OBSTACLE_TYPE_NUMBER 0
+ENTITIY_TYPE_NUMBER 0
+Replay init for write
+Initializing output
+MINIMAP_TILE_WIDTH4
+Fehler beim Oberfläche laden 
+
+
+
+Fehler beim Laden der HUD Graphic
+Error initializing Video Settings
+TimeThisFrame 57
+TimeLastFrame 0
+framelength 57

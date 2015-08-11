@@ -1,0 +1,3 @@
+MouseScrollSpeed    100
+KeyBoardScrollSpeed 100
+doubleButtonTime    500

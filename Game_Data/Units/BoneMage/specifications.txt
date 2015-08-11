@@ -1,0 +1,55 @@
+Properties
+type           |  amount
+--------------------------
+movementSpeed  |  600
+health         |  800
+mana           |  500
+healthreg      |    2
+manareg        |   10
+Meleedamage    |  100
+sightRange     |    8
+Armor          |    0
+Magicarmor     |    0
+tauntRange     |    6
+sortPriority   |    3
+unitCost       |  150
+prodTime       |   75
+
+Abilities:	3
+
+Number0
+--------------------------
+Speed          | 800
+Range          |    6
+EntityType     |    0
+ManaCost       |    0
+---------------------------
+Number1
+--------------------------
+Speed          | 1500
+Range          |    6
+EntityType     |    1
+ManaCost       |  100
+---------------------------
+Number2
+--------------------------
+Speed          |  300
+Range          |    5
+EntityType     |    3
+ManaCost       |  400
+---------------------------
+
+Animations
+command  | UnitAnimSteps | UnitAnimDuration 
+--------------------------------------------
+dying    | 9             | 1000
+holdpos  | 2             | 1000
+standing | 2             | 3500                
+waiting  | 2             | 1000
+moving   | 4             |  500
+atckmove | 4             |  500
+intercep | 4             |  500
+fighting | 4             |  300
+
+
+

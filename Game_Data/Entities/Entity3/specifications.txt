@@ -1,0 +1,13 @@
+Properties
+type           |  amount
+--------------------------
+NumberOfMods   |     2
+NumberofAnim   |     8
+AnimDuration   |   1000
+lifeTime       |   1000
+startaway      |    000
+modifier0      |   1024
+modifier0value |     2
+modifier1      |   513
+modifier1value |    300
+
