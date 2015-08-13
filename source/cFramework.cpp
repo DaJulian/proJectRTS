@@ -117,10 +117,10 @@ bool cFramework::DoFrame()
     //Handle Input
     Error("DoInput");
 
-    if((DoInput(frameLength,&shiftX,&shiftY)) == false){ Error("Error handling input"); return false;}
+    if((DoInput(frameLength,&screenJumpRelativeX,&screenJumpRelativeY)) == false){ Error("Error handling input"); return false;}
     //Draw Graphics
     Error("DoDrawing");
-    if((drawFrame(frameLength,MouseX,MouseY,cursorType,screenX,screenY,&doDrawRect,&DrawRect,pListHead[0],selectedNumber[0],selectedTypes[0],priorizedNumber[0]
+    if((drawFrame(frameLength,MouseX,MouseY,cursorType,screenX,screenY,&doDrawRect,&DrawRect,pListHead[0],selectedNumber[0],selectedBuildings[0],selectedTypes[0],priorizedNumber[0]
         ,EntityList,NumberOfEntities,drawAoe)) == false){ Error("Error drawing"); return false;}
     //Mangae the actual game
     Error("DoControl");

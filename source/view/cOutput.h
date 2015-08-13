@@ -97,7 +97,7 @@ class cOutput
         cOutput();
 
         bool drawFrame(Uint32 tick,int MouseX,int Mmousey,int cursorType,int scrX, int scrY,bool* bDrawSelectionRect
-                       ,SDL_Rect* SelectionRect,cSelection* selListHead,int selectedNumber,int typeNumbers,
+                       ,SDL_Rect* SelectionRect,cSelection* selListHead,int selectedNumber, int selectedBuildings,int typeNumbers,
                        int priorizedNumber,cEntity* EntityList[MAX_ENT],int numEnt,int drawAoe);
         void drawFrameBattleGameScreen(Uint32 ticks,int mouseX,int mouseY,int Units[MAX_UNITS],int placeNum
                                        ,bool clickReady,int startSector[START_SECTOR_X_MAX][START_SECTOR_Y_MAX]
@@ -120,10 +120,15 @@ class cOutput
         void drawSelectionRectangle(SDL_Rect* Rect);
 
         void drawHealthBars(cUnit* Unit,int dX, int dY);
+
+        void drawUnitHud(Uint32 tick,cSelection* selListHead,int selectedUnitNumber,int typeNumbers,int priorizedNumber);
         void drawUnitDescription(cUnit* selectedUnit);
+        void drawUnitPictureAndDescription(Uint32 tick,cSelection* selListHead, int priorizedNumber);
         void drawUnitMinipictures(cSelection* selListHead,int selectedUnitNumber,int typeNumbers,int priorizedNumber);
         void drawGrid(cUnit* selectedUnit,Uint32 t);
         void applyDrawAoe(int posX,int posY,int rangeSq);
+
+        void drawBuildingHud();
 
         void initSightMask();
         void processSightMask();

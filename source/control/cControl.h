@@ -71,7 +71,7 @@ protected:
     int thisUser;
     unsigned short int lastPackID;
 
-    int shiftX,shiftY;
+    int screenJumpRelativeX,screenJumpRelativeY;
     int drawAoe;
 
     //This will be used to check if there is anyone able to cast at the moment the cast is received in the group

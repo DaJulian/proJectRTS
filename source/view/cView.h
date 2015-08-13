@@ -106,13 +106,35 @@ class cView : public cEvent
         cView();
 
         bool InitInput();
-        bool DoInput(Uint32 t, int* shiftX, int* shiftY);
+        bool DoInput(Uint32 t, int* screenJumpRelativeX, int* screenJumpRelativeY);
         void DoBattleGameInput(Uint32 t,int* BuyUnits,int* SellUnits,int* placeUnit, int* placeUnitX
                                ,int* placeUnitY,int* removeUnitX, int* removeUnitY);
-        bool CleanUpInput();
+
+        void applyScreenJump(int* screenJumpRelativeX, int* screenJumpRelativeY);
+        void tickDownScrollDelay(Uint32 ticks);
+        void handleScrolling();
+        void handleKeyScrolling();
+        void handleMouseScrolling();
+
+        void handleAttackMove();
+        void handleCastCommand();
+
+        void handleLeftClickOnMap();
+        void handleLeftClickOnHud();
+
+        void handleLeftClickOnMinimap();
+        void handleLeftClickOnRightHud();
+
+        void handleRightClickOnMap();
+        void handleRightClickOnHud();
+
+        void handleRightClickOnMinimap();
+        void handleRightClickOnRightHud();
 
         void ClickGridLeft();
         void ClickGridRight();
+
+        bool CleanUpInput();
 
         //virtuals already definded in cEvent
         //genereal event-Managing function, calls the corresponding function, depending on the event

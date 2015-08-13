@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
-	<File name="cFramework.cpp" open="1" top="1" tabpos="11">
-		<Cursor position="928" topLine="9" />
+	<File name="cFramework.cpp" open="1" top="0" tabpos="11">
+		<Cursor position="3791" topLine="108" />
 	</File>
 	<File name="cFramework.h" open="1" top="0" tabpos="10">
 		<Cursor position="470" topLine="0" />
@@ -14,7 +14,7 @@
 		<Cursor position="264" topLine="30" />
 	</File>
 	<File name="control/cControl.cpp" open="1" top="0" tabpos="20">
-		<Cursor position="10838" topLine="0" />
+		<Cursor position="9146" topLine="281" />
 	</File>
 	<File name="control/cControl.h" open="1" top="0" tabpos="19">
 		<Cursor position="264" topLine="0" />
@@ -44,7 +44,7 @@
 		<Cursor position="118" topLine="0" />
 	</File>
 	<File name="control/cSelectionControl.cpp" open="1" top="0" tabpos="18">
-		<Cursor position="6847" topLine="103" />
+		<Cursor position="5776" topLine="347" />
 	</File>
 	<File name="control/cSelectionControl.h" open="1" top="0" tabpos="17">
 		<Cursor position="806" topLine="3" />
@@ -137,16 +137,16 @@
 		<Cursor position="436" topLine="0" />
 	</File>
 	<File name="view/cEvent.cpp" open="1" top="0" tabpos="30">
-		<Cursor position="879" topLine="40" />
+		<Cursor position="879" topLine="42" />
 	</File>
 	<File name="view/cEvent.h" open="1" top="0" tabpos="34">
 		<Cursor position="528" topLine="0" />
 	</File>
 	<File name="view/cOutput.cpp" open="1" top="0" tabpos="9">
-		<Cursor position="7721" topLine="239" />
+		<Cursor position="14500" topLine="379" />
 	</File>
 	<File name="view/cOutput.h" open="1" top="0" tabpos="8">
-		<Cursor position="207" topLine="9" />
+		<Cursor position="5034" topLine="96" />
 	</File>
 	<File name="view/cSurface.cpp" open="1" top="0" tabpos="31">
 		<Cursor position="1546" topLine="3" />
@@ -154,10 +154,10 @@
 	<File name="view/cSurface.h" open="1" top="0" tabpos="21">
 		<Cursor position="140" topLine="0" />
 	</File>
-	<File name="view/cView.cpp" open="1" top="0" tabpos="2">
-		<Cursor position="13953" topLine="567" />
+	<File name="view/cView.cpp" open="1" top="1" tabpos="2">
+		<Cursor position="7022" topLine="123" />
 	</File>
 	<File name="view/cView.h" open="1" top="0" tabpos="3">
-		<Cursor position="2403" topLine="93" />
+		<Cursor position="3056" topLine="110" />
 	</File>
 </CodeBlocks_layout_file>

@@ -72,6 +72,15 @@ bool cBuilding::checkAccess(int own)
     return false;
 }
 
+void cBuilding::setSelected(bool sel)
+{
+    selected = sel;
+}
+bool cBuilding::checkSelected()
+{
+    return selected;
+}
+
 int cBuilding::getPositionX()
 {
     return posiX;

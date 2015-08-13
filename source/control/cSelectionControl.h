@@ -11,11 +11,12 @@ protected:
     int selectedNumber[11];
     int selectedTypes[11];
     int priorizedNumber[11];
+    int selectedBuildings[11];
 public:
     cSelectionControl();
 
-    bool AddSelection(cUnit* Sel,int group);
-    bool RemoveSelection(cUnit* Sel,int group);
+    bool AddSelection(cUnit* Sel, cBuilding* buiSel,int group);
+    bool RemoveSelection(cUnit* Sel, cBuilding* buiSel,int group);
 
     bool ClearSelection(int group);
 

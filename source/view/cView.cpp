@@ -104,29 +104,15 @@ bool cView::InitInput()
     return 1;
 }
 
-bool cView::DoInput(Uint32 t, int* shiftX, int* shiftY)
+bool cView::DoInput(Uint32 ticks, int* screenJumpRelativeX, int* screenJumpRelativeY)
 {
-    //handle Input
 	SDL_Event Event;
-
 	while(SDL_PollEvent(&Event))
 	{
 		UseEvent(&Event);
 	}
 
-    if(*shiftX != 0)
-    {
-        screenX = screenX + *shiftX;
-        LmXd = 0;
-        *shiftX = 0;
-    }
-    if(*shiftY != 0)
-    {
-        screenY = screenY + *shiftY;
-        LmYd = 0;
-        *shiftY = 0;
-    }
-
+    applyScreenJump(screenJumpRelativeX,screenJumpRelativeY);
 
     //exit command
     if(keyEscape == true)
@@ -136,195 +122,20 @@ bool cView::DoInput(Uint32 t, int* shiftX, int* shiftY)
         return 1;
     }
 
-    ScrollDelayY -= t;
-    if(ScrollDelayY<0) ScrollDelayY = 0;
-    ScrollDelayX -= t;
-    if(ScrollDelayX<0) ScrollDelayX = 0;
-    doubleButton -= t;
-    if(doubleButton<0) doubleButton = 0;
-
-    //Keyboard scrolling
-    if(keyUp == true)
-    {
-        //Scroll up if program didnt scroll recently
-        if(ScrollDelayY == 0)
-        {
-            screenY--;
-            ScrollDelayY = SCROLL_SPEED_KEYBOARD;
-            if(screenY<0) screenY =0;
-        }
-    }
-    if(keyLeft == true)
-    {
-        //Scroll left if program didnt scroll recently
-        if(ScrollDelayX == 0)
-        {
-            screenX--;
-            ScrollDelayX = SCROLL_SPEED_KEYBOARD;
-            if(screenX<0) screenX =0;
-        }
-    }
-    if(keyDown == true)
-    {
-        //Scroll down if program didnt scroll recently
-        if(ScrollDelayY == 0)
-        {
-            screenY++;
-            ScrollDelayY = SCROLL_SPEED_KEYBOARD;
-            if(screenY>WORLD_HEIGHT -SCR_TILE_HEIGHT) screenY = WORLD_HEIGHT -SCR_TILE_HEIGHT;
-        }
-    }
-    if(keyRight == true)
-    {
-        //Scroll right if program didnt scroll recently
-        if(ScrollDelayX == 0)
-        {
-            screenX++;
-            ScrollDelayX = SCROLL_SPEED_KEYBOARD;
-            if(screenX>WORLD_WIDTH -SCR_TILE_WIDTH) screenX = WORLD_WIDTH -SCR_TILE_WIDTH;
-        }
-    }
-
-    //Mouse scrolling
-    if(MouseY < 10)
-    {
-        //Scroll up if program didnt scroll recently
-        if(ScrollDelayY == 0)
-        {
-            screenY--;
-            ScrollDelayY = SCROLL_SPEED_MOUSE;
-            if(screenY<0) screenY =0;
-        }
-    }
-    if(MouseX < 10)
-    {
-        //Scroll left if program didnt scroll recently
-        if(ScrollDelayX == 0)
-        {
-            screenX--;
-            ScrollDelayX = SCROLL_SPEED_MOUSE;
-            if(screenX<0) screenX =0;
-        }
-    }
-    if(MouseY > SCREEN_HEIGHT-10)
-    {
-        //Scroll down if program didnt scroll recently
-        if(ScrollDelayY == 0)
-        {
-            screenY++;
-            ScrollDelayY = SCROLL_SPEED_MOUSE;
-            if(screenY>WORLD_HEIGHT -SCR_TILE_HEIGHT) screenY = WORLD_HEIGHT -SCR_TILE_HEIGHT;
-        }
-    }
-    if(MouseX > SCREEN_WIDTH-10)
-    {
-        //Scroll right if program didnt scroll recently
-        if(ScrollDelayX == 0)
-        {
-            screenX++;
-            ScrollDelayX = SCROLL_SPEED_MOUSE;
-            if(screenX>WORLD_WIDTH -SCR_TILE_WIDTH) screenX = WORLD_WIDTH -SCR_TILE_WIDTH;
-        }
-    }
+    tickDownScrollDelay(ticks);
+    handleScrolling();
 
     //The following actions can only be applied if it is not a replay
     if(CONTROL_SETTINGS != MODE_REPLAY)
     {
-        //giving an attackmove somewhere
-        if(LMButton == true && blockLeft == false && attackMove == true && castMove == -1)
-        {
-            //attackmove on the screen
-            if(LBcX <= SCR_TILE_WIDTH*TILE_WIDTH && LBcY <= SCR_TILE_HEIGHT*TILE_HEIGHT)
-            {
-                moveCommandX = screenX + (LBcX / TILE_WIDTH);
-                moveCommandY = screenY + (LBcY / TILE_HEIGHT);
-                doMove = true;
-            }
-            //attackmove on the minimap
-            if(LBcX >= MINIMAP_X && LBcX <= MINIMAP_X+MINIMAP_WIDTH && LBcY >= MINIMAP_Y && RBcY <= MINIMAP_Y+MINIMAP_HEIGHT)
-            {
-                moveCommandX = (LBcX - MINIMAP_X)/MINIMAP_TILE_WIDTH;
-                moveCommandY = (LBcY - MINIMAP_Y)/MINIMAP_TILE_HEIGHT;
-                doMove = true;
-            }
-            blockLeft = true;
-        }
-        //giving a cast command somewhere
-        if(LMButton == true && blockLeft == false && castMove != -1 && attackMove == false)
-        {
-            //Cast COmmand On the screen
-            if(LBcX <= SCR_TILE_WIDTH*TILE_WIDTH && LBcY <= SCR_TILE_HEIGHT*TILE_HEIGHT)
-            {
-                moveCommandX = screenX + (LBcX / TILE_WIDTH);
-                moveCommandY = screenY + (LBcY / TILE_HEIGHT);
-                doMove = true;
-            }
-            //Cast Command On the minimap
-            if(LBcX >= MINIMAP_X && LBcX <= MINIMAP_X+MINIMAP_WIDTH && LBcY >= MINIMAP_Y && LBcY <= MINIMAP_Y+MINIMAP_HEIGHT)
-            {
-                moveCommandX = (LBcX - MINIMAP_X)/MINIMAP_TILE_WIDTH;
-                moveCommandY = (LBcY - MINIMAP_Y)/MINIMAP_TILE_HEIGHT;
-                doMove = true;
-            }
-            blockLeft = true;
-        }
+        handleAttackMove();
+        handleCastCommand();
 
         //Clicking somewhere without an active attackmove or castmove
         if(LMButton == true && blockLeft == false && attackMove == false && castMove == -1)
         {
-            //draw a rectangle on the screen
-            if(LBcX <= SCR_TILE_WIDTH*TILE_WIDTH && LBcY <= SCR_TILE_HEIGHT*TILE_HEIGHT)
-            {
-                if(keyControl == true)
-                {
-                    selectOnlySpecificUnit = true;
-                    SelectSpecificRect.w = SCR_TILE_WIDTH*TILE_WIDTH;
-                    SelectSpecificRect.h = SCR_TILE_HEIGHT*TILE_HEIGHT;
-                    SelectSpecificRect.x = 0;
-                    SelectSpecificRect.y = 0;
-                    specificUnitX = LBcX/TILE_WIDTH + screenX;
-                    specificUnitY = LBcY/TILE_HEIGHT + screenY;
-                    if(specificUnitX < 0){specificUnitX = 0;}
-                    if(specificUnitX >= WORLD_WIDTH){specificUnitX = WORLD_WIDTH-1;}
-                    if(specificUnitY < 0){specificUnitY = 0;}
-                    if(specificUnitY >= WORLD_HEIGHT){specificUnitY = WORLD_HEIGHT-1;}
-                    LMButton = false;
-                    blockLeft = true;
-                }
-                else
-                {
-                    doDrawRect = true;
-                }
-            }
-            //clicking on the minimap
-            if(LBcX >= MINIMAP_X && LBcX <= MINIMAP_X+MINIMAP_WIDTH && LBcY >= MINIMAP_Y && LBcY <= MINIMAP_Y+MINIMAP_HEIGHT)
-            {
-                screenX = (LBcX - MINIMAP_X)/MINIMAP_TILE_WIDTH - SCR_TILE_WIDTH/2;
-                screenY = (LBcY - MINIMAP_Y)/MINIMAP_TILE_HEIGHT - SCR_TILE_HEIGHT/2;
-            }
-            //sliding over the minimap with pressed left mouse button
-            if(LmXd >= MINIMAP_X && LmXd <= MINIMAP_X+MINIMAP_WIDTH && LmYd >= MINIMAP_Y && LmYd <= MINIMAP_Y+MINIMAP_HEIGHT)
-            {
-                screenX = (LmXd - MINIMAP_X)/MINIMAP_TILE_WIDTH - SCR_TILE_WIDTH/2;
-                screenY = (LmYd - MINIMAP_Y)/MINIMAP_TILE_HEIGHT - SCR_TILE_HEIGHT/2;
-            }
-            //the minipic range is clicked; select the clicked unit
-            if(LBcX >= MINIPIC_X && LBcY >= MINIPIC_Y && LBcX <= (MINIPIC_X + MINIPIC_COLUMNS*MINIPIC_WIDTH) && LBcY <= (MINIPIC_Y + MINIPIC_ROWS*MINIPIC_HEIGHT))
-            {
-                selMiniPicNumber = 10;
-                int selX,selY;
-                selX = ((LBcX - MINIPIC_X))/MINIPIC_WIDTH + 1;
-                selY = ((LBcY - MINIPIC_Y))/MINIPIC_HEIGHT;
-                selMiniPicNumber = selX + selY*MINIPIC_COLUMNS;
-                ///DEBUG
-                //selMiniPicNumber = 2;
-                selMiniPic = true;
-                LMButton = false;
-            }
-            if(LBcX >= GRID_X && LBcY >= GRID_Y)
-            {
-                ClickGridLeft();
-            }
+            handleLeftClickOnMap();
+            handleLeftClickOnHud();
         }
         if(LMButton == false)
         {
@@ -334,23 +145,8 @@ bool cView::DoInput(Uint32 t, int* shiftX, int* shiftY)
         {
             if(attackMove == false && castMove == -1)
             {
-                if(RBcX <= SCR_TILE_WIDTH*TILE_WIDTH && RBcY <= SCR_TILE_HEIGHT*TILE_HEIGHT)
-                {
-                    moveCommandX = screenX + (RBcX / TILE_WIDTH);
-                    moveCommandY = screenY + (RBcY / TILE_HEIGHT);
-                    doMove = true;
-                }
-
-                if(RBcX >= MINIMAP_X && RBcX <= MINIMAP_X+MINIMAP_WIDTH && RBcY >= MINIMAP_Y && RBcY <= MINIMAP_Y+MINIMAP_HEIGHT)
-                {
-                    moveCommandX = (RBcX - MINIMAP_X)/MINIMAP_TILE_WIDTH;
-                    moveCommandY = (RBcY - MINIMAP_Y)/MINIMAP_TILE_HEIGHT;
-                    doMove = true;
-                }
-                if(RBcX >= GRID_X && RBcY >= GRID_Y)
-                {
-                    ClickGridRight();
-                }
+                handleRightClickOnMap();
+                handleRightClickOnHud();
             }
             else
             {
@@ -474,6 +270,275 @@ bool cView::DoInput(Uint32 t, int* shiftX, int* shiftY)
 
     return 1;
 
+}
+
+void cView::applyScreenJump(int* screenJumpRelativeX, int* screenJumpRelativeY)
+{
+    if(*screenJumpRelativeX != 0)
+    {
+        screenX = screenX + *screenJumpRelativeX;
+        LmXd = 0;
+        *screenJumpRelativeX = 0;
+    }
+    if(*screenJumpRelativeY != 0)
+    {
+        screenY = screenY + *screenJumpRelativeY;
+        LmYd = 0;
+        *screenJumpRelativeY = 0;
+    }
+}
+
+void  cView::tickDownScrollDelay(Uint32 ticks)
+{
+    ScrollDelayY -= ticks;
+    if(ScrollDelayY<0) ScrollDelayY = 0;
+    ScrollDelayX -= ticks;
+    if(ScrollDelayX<0) ScrollDelayX = 0;
+    doubleButton -= ticks;
+    if(doubleButton<0) doubleButton = 0;
+}
+
+void cView::handleScrolling()
+{
+    handleKeyScrolling();
+    handleMouseScrolling();
+}
+
+void cView::handleKeyScrolling()
+{
+    if(keyUp == true)
+    {
+        //Scroll up if program didnt scroll recently
+        if(ScrollDelayY == 0)
+        {
+            screenY--;
+            ScrollDelayY = SCROLL_SPEED_KEYBOARD;
+            if(screenY<0) screenY =0;
+        }
+    }
+    if(keyLeft == true)
+    {
+        //Scroll left if program didnt scroll recently
+        if(ScrollDelayX == 0)
+        {
+            screenX--;
+            ScrollDelayX = SCROLL_SPEED_KEYBOARD;
+            if(screenX<0) screenX =0;
+        }
+    }
+    if(keyDown == true)
+    {
+        //Scroll down if program didnt scroll recently
+        if(ScrollDelayY == 0)
+        {
+            screenY++;
+            ScrollDelayY = SCROLL_SPEED_KEYBOARD;
+            if(screenY>WORLD_HEIGHT -SCR_TILE_HEIGHT) screenY = WORLD_HEIGHT -SCR_TILE_HEIGHT;
+        }
+    }
+    if(keyRight == true)
+    {
+        //Scroll right if program didnt scroll recently
+        if(ScrollDelayX == 0)
+        {
+            screenX++;
+            ScrollDelayX = SCROLL_SPEED_KEYBOARD;
+            if(screenX>WORLD_WIDTH -SCR_TILE_WIDTH) screenX = WORLD_WIDTH -SCR_TILE_WIDTH;
+        }
+    }
+}
+
+void cView::handleMouseScrolling()
+{
+    if(MouseY < 10)
+    {
+        //Scroll up if program didnt scroll recently
+        if(ScrollDelayY == 0)
+        {
+            screenY--;
+            ScrollDelayY = SCROLL_SPEED_MOUSE;
+            if(screenY<0) screenY =0;
+        }
+    }
+    if(MouseX < 10)
+    {
+        //Scroll left if program didnt scroll recently
+        if(ScrollDelayX == 0)
+        {
+            screenX--;
+            ScrollDelayX = SCROLL_SPEED_MOUSE;
+            if(screenX<0) screenX =0;
+        }
+    }
+    if(MouseY > SCREEN_HEIGHT-10)
+    {
+        //Scroll down if program didnt scroll recently
+        if(ScrollDelayY == 0)
+        {
+            screenY++;
+            ScrollDelayY = SCROLL_SPEED_MOUSE;
+            if(screenY>WORLD_HEIGHT -SCR_TILE_HEIGHT) screenY = WORLD_HEIGHT -SCR_TILE_HEIGHT;
+        }
+    }
+    if(MouseX > SCREEN_WIDTH-10)
+    {
+        //Scroll right if program didnt scroll recently
+        if(ScrollDelayX == 0)
+        {
+            screenX++;
+            ScrollDelayX = SCROLL_SPEED_MOUSE;
+            if(screenX>WORLD_WIDTH -SCR_TILE_WIDTH) screenX = WORLD_WIDTH -SCR_TILE_WIDTH;
+        }
+    }
+}
+
+void cView::handleAttackMove()
+{
+    if(LMButton == true && blockLeft == false && attackMove == true && castMove == -1)
+    {
+        //attackmove on the screen
+        if(LBcX <= SCR_TILE_WIDTH*TILE_WIDTH && LBcY <= SCR_TILE_HEIGHT*TILE_HEIGHT)
+        {
+            moveCommandX = screenX + (LBcX / TILE_WIDTH);
+            moveCommandY = screenY + (LBcY / TILE_HEIGHT);
+            doMove = true;
+        }
+        //attackmove on the minimap
+        if(LBcX >= MINIMAP_X && LBcX <= MINIMAP_X+MINIMAP_WIDTH && LBcY >= MINIMAP_Y && LBcY <= MINIMAP_Y+MINIMAP_HEIGHT)
+        {
+            moveCommandX = (LBcX - MINIMAP_X)/MINIMAP_TILE_WIDTH;
+            moveCommandY = (LBcY - MINIMAP_Y)/MINIMAP_TILE_HEIGHT;
+            doMove = true;
+        }
+        blockLeft = true;
+    }
+}
+
+void cView::handleCastCommand()
+{
+    if(LMButton == true && blockLeft == false && castMove != -1 && attackMove == false)
+    {
+        //Cast COmmand On the screen
+        if(LBcX <= SCR_TILE_WIDTH*TILE_WIDTH && LBcY <= SCR_TILE_HEIGHT*TILE_HEIGHT)
+        {
+            moveCommandX = screenX + (LBcX / TILE_WIDTH);
+            moveCommandY = screenY + (LBcY / TILE_HEIGHT);
+            doMove = true;
+        }
+        //Cast Command On the minimap
+        if(LBcX >= MINIMAP_X && LBcX <= MINIMAP_X+MINIMAP_WIDTH && LBcY >= MINIMAP_Y && LBcY <= MINIMAP_Y+MINIMAP_HEIGHT)
+        {
+            moveCommandX = (LBcX - MINIMAP_X)/MINIMAP_TILE_WIDTH;
+            moveCommandY = (LBcY - MINIMAP_Y)/MINIMAP_TILE_HEIGHT;
+            doMove = true;
+        }
+        blockLeft = true;
+    }
+}
+
+void cView::handleLeftClickOnMap()
+{
+    //draw a rectangle on the screen
+    if(LBcX <= SCR_TILE_WIDTH*TILE_WIDTH && LBcY <= SCR_TILE_HEIGHT*TILE_HEIGHT)
+    {
+        if(keyControl == true)
+        {
+            selectOnlySpecificUnit = true;
+            SelectSpecificRect.w = SCR_TILE_WIDTH*TILE_WIDTH;
+            SelectSpecificRect.h = SCR_TILE_HEIGHT*TILE_HEIGHT;
+            SelectSpecificRect.x = 0;
+            SelectSpecificRect.y = 0;
+            specificUnitX = LBcX/TILE_WIDTH + screenX;
+            specificUnitY = LBcY/TILE_HEIGHT + screenY;
+            if(specificUnitX < 0){specificUnitX = 0;}
+            if(specificUnitX >= WORLD_WIDTH){specificUnitX = WORLD_WIDTH-1;}
+            if(specificUnitY < 0){specificUnitY = 0;}
+            if(specificUnitY >= WORLD_HEIGHT){specificUnitY = WORLD_HEIGHT-1;}
+            LMButton = false;
+            blockLeft = true;
+        }
+        else
+        {
+            doDrawRect = true;
+        }
+    }
+
+}
+
+void cView::handleLeftClickOnHud()
+{
+    handleLeftClickOnMinimap();
+    handleLeftClickOnRightHud();
+}
+
+void cView::handleLeftClickOnMinimap()
+{
+    if(LBcX >= MINIMAP_X && LBcX <= MINIMAP_X+MINIMAP_WIDTH && LBcY >= MINIMAP_Y && LBcY <= MINIMAP_Y+MINIMAP_HEIGHT)
+    {
+        screenX = (LBcX - MINIMAP_X)/MINIMAP_TILE_WIDTH - SCR_TILE_WIDTH/2;
+        screenY = (LBcY - MINIMAP_Y)/MINIMAP_TILE_HEIGHT - SCR_TILE_HEIGHT/2;
+    }
+    //sliding over the minimap with pressed left mouse button
+    if(LmXd >= MINIMAP_X && LmXd <= MINIMAP_X+MINIMAP_WIDTH && LmYd >= MINIMAP_Y && LmYd <= MINIMAP_Y+MINIMAP_HEIGHT)
+    {
+        screenX = (LmXd - MINIMAP_X)/MINIMAP_TILE_WIDTH - SCR_TILE_WIDTH/2;
+        screenY = (LmYd - MINIMAP_Y)/MINIMAP_TILE_HEIGHT - SCR_TILE_HEIGHT/2;
+    }
+}
+
+void cView::handleLeftClickOnRightHud()
+{
+    //the minipic range is clicked; select the clicked unit
+    if(LBcX >= MINIPIC_X && LBcY >= MINIPIC_Y && LBcX <= (MINIPIC_X + MINIPIC_COLUMNS*MINIPIC_WIDTH) && LBcY <= (MINIPIC_Y + MINIPIC_ROWS*MINIPIC_HEIGHT))
+    {
+        selMiniPicNumber = 10;
+        int selX,selY;
+        selX = ((LBcX - MINIPIC_X))/MINIPIC_WIDTH + 1;
+        selY = ((LBcY - MINIPIC_Y))/MINIPIC_HEIGHT;
+        selMiniPicNumber = selX + selY*MINIPIC_COLUMNS;
+        ///DEBUG
+        //selMiniPicNumber = 2;
+        selMiniPic = true;
+        LMButton = false;
+    }
+    if(LBcX >= GRID_X && LBcY >= GRID_Y)
+    {
+        ClickGridLeft();
+    }
+}
+
+void cView::handleRightClickOnMap()
+{
+    if(RBcX <= SCR_TILE_WIDTH*TILE_WIDTH && RBcY <= SCR_TILE_HEIGHT*TILE_HEIGHT)
+    {
+        moveCommandX = screenX + (RBcX / TILE_WIDTH);
+        moveCommandY = screenY + (RBcY / TILE_HEIGHT);
+        doMove = true;
+    }
+}
+
+void cView::handleRightClickOnHud()
+{
+    handleRightClickOnMinimap();
+    handleRightClickOnRightHud();
+}
+
+void cView::handleRightClickOnMinimap()
+{
+    if(RBcX >= MINIMAP_X && RBcX <= MINIMAP_X+MINIMAP_WIDTH && RBcY >= MINIMAP_Y && RBcY <= MINIMAP_Y+MINIMAP_HEIGHT)
+    {
+        moveCommandX = (RBcX - MINIMAP_X)/MINIMAP_TILE_WIDTH;
+        moveCommandY = (RBcY - MINIMAP_Y)/MINIMAP_TILE_HEIGHT;
+        doMove = true;
+    }
+}
+
+void cView::handleRightClickOnRightHud()
+{
+    if(RBcX >= GRID_X && RBcY >= GRID_Y)
+    {
+        ClickGridRight();
+    }
 }
 
 void cView::DoBattleGameInput(Uint32 t,int* BuyUnits,int* SellUnits,int* placeUnit, int* placeUnitX,int* placeUnitY,

@@ -253,7 +253,7 @@ bool cOutput::InitVideo(cWorldMap* pMap,int own)
 
     //Initialize the Video Mode
     mScreen = 0;
-	mScreen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, COLOR_DEPTH, /*SDL_ANYFORMAT |*/SDL_SWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
+	mScreen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, COLOR_DEPTH, /*SDL_ANYFORMAT |*/SDL_SWSURFACE | SDL_DOUBLEBUF /*| SDL_FULLSCREEN*/);
 	if (mScreen == NULL)
 	{
 		Error("Video Modus could not be initiallized: %s\n");
@@ -363,13 +363,45 @@ bool cOutput::InitVideo(cWorldMap* pMap,int own)
 }
 
 bool cOutput::drawFrame(Uint32 ticks,int mouseX,int mouseY,int cursorType,int scrX, int scrY,bool* bDrawSelectionRect
-                        ,SDL_Rect* SelectionRect,cSelection* selListHead,int selectedNumber,int typeNumbers,int priorizedNumber,cEntity* EntityList[MAX_ENT],int numEnt,int drawAoe)
+                        ,SDL_Rect* SelectionRect,cSelection* selListHead,int selectedNumber, int selectedBuildings,int typeNumbers,int priorizedNumber,cEntity* EntityList[MAX_ENT],int numEnt,int drawAoe)
 {
     drawMap(scrX,scrY);
     drawEntities(EntityList,numEnt,scrX,scrY);
     if(*bDrawSelectionRect==true){ drawSelectionRectangle(SelectionRect); }
 
-    //Draw the unit picture and description
+    if(selectedNumber > 0)
+    {
+        drawUnitHud(ticks,selListHead,selectedNumber,typeNumbers,priorizedNumber);
+    }
+    else if(selectedBuildings > 0)
+    {
+        ///TODO
+        //drawBuildingHud();
+    }
+
+    if(drawAoe != -1)
+    {
+        applyDrawAoe((mouseX)/TILE_WIDTH,(mouseY)/TILE_HEIGHT,drawAoe);
+    }
+    // Draw the cursor
+    cSurface::Draw(mScreen,cursorGraphic[cursorType],mouseX+CURSOR_OFFSET_X,mouseY+CURSOR_OFFSET_Y);
+
+    //Show the new screen
+    SDL_Flip(mScreen);
+
+    return 1;
+}
+
+void cOutput::drawUnitHud(Uint32 ticks,cSelection* selListHead,int selectedUnitNumber,int typeNumbers,int priorizedNumber )
+{
+    drawUnitPictureAndDescription(ticks,selListHead,priorizedNumber);
+    drawUnitMinipictures(selListHead,selectedUnitNumber,typeNumbers,priorizedNumber);
+    ///TODO draw general Grid for all units
+    //drawGrid()
+}
+
+void cOutput::drawUnitPictureAndDescription(Uint32 ticks,cSelection* selListHead, int priorizedNumber)
+{
     if(selListHead->getSuccessor() != NULL)
     {
         cSelection* sel = selListHead->getSuccessor();
@@ -394,20 +426,6 @@ bool cOutput::drawFrame(Uint32 ticks,int mouseX,int mouseY,int cursorType,int sc
             sel=sel->getSuccessor();
         }
     }
-    //Draw the Unit Minipictures
-    drawUnitMinipictures(selListHead,selectedNumber,typeNumbers,priorizedNumber);
-
-    if(drawAoe != -1)
-    {
-        applyDrawAoe((mouseX)/TILE_WIDTH,(mouseY)/TILE_HEIGHT,drawAoe);
-    }
-    // Draw the cursor
-    cSurface::Draw(mScreen,cursorGraphic[cursorType],mouseX+CURSOR_OFFSET_X,mouseY+CURSOR_OFFSET_Y);
-
-    //Show the new screen
-    SDL_Flip(mScreen);
-
-    return 1;
 }
 
     //Draw the minimap

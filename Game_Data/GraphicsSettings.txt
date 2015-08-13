@@ -1,183 +1,183 @@
 SCREENWIDTH 1024
 SCREENHEIGHT 768
-COLORDEPTH    32
+COLORDEPTH 32
 
-HudGraphicFile	  Hud.bmp
-SelectFrameFile   Frame.bmp
-AoeMarkerFile	  AoeFrame.bmp
-AttackPic	  AttackPic.bmp
-StopPic		  StopPic.bmp
-HoldPosiPic	  HoldPosPic.bmp
-MovementPic	  WalkPic.bmp
-GridAnimation	  GridAnim.bmp
-GridAnimSteps	  8
+HudGraphicFile	 ../Game_Data/Hud.bmp
+SelectFrameFile ../Game_Data/Frame.bmp
+AoeMarkerFile	 ../Game_Data/AoeFrame.bmp
+AttackPic	 ../Game_Data/AttackPic.bmp
+StopPic		 ../Game_Data/StopPic.bmp
+HoldPosiPic	 ../Game_Data/HoldPosPic.bmp
+MovementPic	 ../Game_Data/WalkPic.bmp
+GridAnimation	 ../Game_Data/GridAnim.bmp
+GridAnimSteps	 8
 CurorGraphics
-Normal		  Cursors/CursorNormal.bmp
-Move		  Cursors/CursorMove.bmp
-Attack		  Cursors/CursorAttack.bmp
-Cast		  Cursors/CursorCast.bmp
+Normal		 ../Game_Data/Cursors/CursorNormal.bmp
+Move		 ../Game_Data/Cursors/CursorMove.bmp
+Attack		 ../Game_Data/Cursors/CursorAttack.bmp
+Cast		 ../Game_Data/Cursors/CursorCast.bmp
 
-FogOfWarGraphics  Tiles/FOW.bmp Tiles/FOW/FOWMinimapsmall.bmp Tiles/FOW/FOWMinimapmedium.bmp Tiles/FOW/FOWMinimaplarge.bmp Tiles/FOW/FOWMinimaphuge.bmp
+FogOfWarGraphics ../Game_Data/Tiles/FOW.bmp ../Game_Data/Tiles/FOW/FOWMinimapsmall.bmp ../Game_Data/Tiles/FOW/FOWMinimapmedium.bmp ../Game_Data/Tiles/FOW/FOWMinimaplarge.bmp ../Game_Data/Tiles/FOW/FOWMinimaphuge.bmp
 
-Tile0Graphics     Tiles/Tile0.bmp Tiles/Tile0/Tile0Minimapsmall.bmp Tiles/Tile0/Tile0Minimapmedium.bmp Tiles/Tile0/Tile0Minimaplarge.bmp Tiles/Tile0/Tile0Minimaphuge.bmp
-Tile1Graphics     Tiles/Tile1.bmp Tiles/Tile1/Tile1Minimapsmall.bmp Tiles/Tile1/Tile1Minimapmedium.bmp Tiles/Tile1/Tile1Minimaplarge.bmp Tiles/Tile1/Tile1Minimaphuge.bmp
-Tile2Graphics     Tiles/Tile2.bmp Tiles/Tile2/Tile2Minimapsmall.bmp Tiles/Tile2/Tile2Minimapmedium.bmp Tiles/Tile2/Tile2Minimaplarge.bmp Tiles/Tile2/Tile2Minimaphuge.bmp
-Tile3Graphics     Tiles/Tile3.bmp Tiles/Tile3/Tile3Minimapsmall.bmp Tiles/Tile3/Tile3Minimapmedium.bmp Tiles/Tile3/Tile3Minimaplarge.bmp Tiles/Tile3/Tile3Minimaphuge.bmp
-Tile4Graphics     Tiles/Tile4.bmp Tiles/Tile4/Tile4Minimapsmall.bmp Tiles/Tile4/Tile4Minimapmedium.bmp Tiles/Tile4/Tile4Minimaplarge.bmp Tiles/Tile4/Tile4Minimaphuge.bmp
-Tile5Graphics     Tiles/Tile5.bmp Tiles/Tile5/Tile5Minimapsmall.bmp Tiles/Tile5/Tile5Minimapmedium.bmp Tiles/Tile5/Tile5Minimaplarge.bmp Tiles/Tile5/Tile5Minimaphuge.bmp
-Tile6Graphics     Tiles/Tile6.bmp Tiles/Tile6/Tile6Minimapsmall.bmp Tiles/Tile6/Tile6Minimapmedium.bmp Tiles/Tile6/Tile6Minimaplarge.bmp Tiles/Tile6/Tile6Minimaphuge.bmp
+Tile0Graphics ../Game_Data/Tiles/Tile0.bmp ../Game_Data/Tiles/Tile0/Tile0Minimapsmall.bmp ../Game_Data/Tiles/Tile0/Tile0Minimapmedium.bmp ../Game_Data/Tiles/Tile0/Tile0Minimaplarge.bmp ../Game_Data/Tiles/Tile0/Tile0Minimaphuge.bmp
+Tile1Graphics ../Game_Data/Tiles/Tile1.bmp ../Game_Data/Tiles/Tile1/Tile1Minimapsmall.bmp ../Game_Data/Tiles/Tile1/Tile1Minimapmedium.bmp ../Game_Data/Tiles/Tile1/Tile1Minimaplarge.bmp ../Game_Data/Tiles/Tile1/Tile1Minimaphuge.bmp
+Tile2Graphics ../Game_Data/Tiles/Tile2.bmp ../Game_Data/Tiles/Tile2/Tile2Minimapsmall.bmp ../Game_Data/Tiles/Tile2/Tile2Minimapmedium.bmp ../Game_Data/Tiles/Tile2/Tile2Minimaplarge.bmp ../Game_Data/Tiles/Tile2/Tile2Minimaphuge.bmp
+Tile3Graphics ../Game_Data/Tiles/Tile3.bmp ../Game_Data/Tiles/Tile3/Tile3Minimapsmall.bmp ../Game_Data/Tiles/Tile3/Tile3Minimapmedium.bmp ../Game_Data/Tiles/Tile3/Tile3Minimaplarge.bmp ../Game_Data/Tiles/Tile3/Tile3Minimaphuge.bmp
+Tile4Graphics ../Game_Data/Tiles/Tile4.bmp ../Game_Data/Tiles/Tile4/Tile4Minimapsmall.bmp ../Game_Data/Tiles/Tile4/Tile4Minimapmedium.bmp ../Game_Data/Tiles/Tile4/Tile4Minimaplarge.bmp ../Game_Data/Tiles/Tile4/Tile4Minimaphuge.bmp
+Tile5Graphics ../Game_Data/Tiles/Tile5.bmp ../Game_Data/Tiles/Tile5/Tile5Minimapsmall.bmp ../Game_Data/Tiles/Tile5/Tile5Minimapmedium.bmp ../Game_Data/Tiles/Tile5/Tile5Minimaplarge.bmp ../Game_Data/Tiles/Tile5/Tile5Minimaphuge.bmp
+Tile6Graphics ../Game_Data/Tiles/Tile6.bmp ../Game_Data/Tiles/Tile6/Tile6Minimapsmall.bmp ../Game_Data/Tiles/Tile6/Tile6Minimapmedium.bmp ../Game_Data/Tiles/Tile6/Tile6Minimaplarge.bmp ../Game_Data/Tiles/Tile6/Tile6Minimaphuge.bmp
 
-Obstacle0Graphics Obstacles/Obstacle0.bmp Obstacles/Obstacle0/Obstacle0Minimapsmall.bmp Obstacles/Obstacle0/Obstacle0Minimapmedium.bmp Obstacles/Obstacle0/Obstacle0Minimaplarge.bmp Obstacles/Obstacle0/Obstacle0Minimaphuge.bmp
-Obstacle1Graphics Obstacles/Obstacle1.bmp Obstacles/Obstacle0/Obstacle0Minimapsmall.bmp Obstacles/Obstacle0/Obstacle0Minimapmedium.bmp Obstacles/Obstacle0/Obstacle0Minimaplarge.bmp Obstacles/Obstacle0/Obstacle0Minimaphuge.bmp
-Obstacle2Graphics Obstacles/Obstacle2.bmp Obstacles/Obstacle0/Obstacle0Minimapsmall.bmp Obstacles/Obstacle0/Obstacle0Minimapmedium.bmp Obstacles/Obstacle0/Obstacle0Minimaplarge.bmp Obstacles/Obstacle0/Obstacle0Minimaphuge.bmp
-Obstacle3Graphics Obstacles/Obstacle3.bmp Obstacles/Obstacle0/Obstacle0Minimapsmall.bmp Obstacles/Obstacle0/Obstacle0Minimapmedium.bmp Obstacles/Obstacle0/Obstacle0Minimaplarge.bmp Obstacles/Obstacle0/Obstacle0Minimaphuge.bmp
-Obstacle4Graphics Obstacles/Obstacle4.bmp Obstacles/Obstacle0/Obstacle0Minimapsmall.bmp Obstacles/Obstacle0/Obstacle0Minimapmedium.bmp Obstacles/Obstacle0/Obstacle0Minimaplarge.bmp Obstacles/Obstacle0/Obstacle0Minimaphuge.bmp
-Obstacle5Graphics Obstacles/Obstacle5.bmp Obstacles/Obstacle0/Obstacle0Minimapsmall.bmp Obstacles/Obstacle0/Obstacle0Minimapmedium.bmp Obstacles/Obstacle0/Obstacle0Minimaplarge.bmp Obstacles/Obstacle0/Obstacle0Minimaphuge.bmp
+Obstacle0Graphics ../Game_Data/Obstacles/Obstacle0.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimapsmall.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimapmedium.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimaplarge.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimaphuge.bmp
+Obstacle1Graphics ../Game_Data/Obstacles/Obstacle1.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimapsmall.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimapmedium.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimaplarge.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimaphuge.bmp
+Obstacle2Graphics ../Game_Data/Obstacles/Obstacle2.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimapsmall.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimapmedium.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimaplarge.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimaphuge.bmp
+Obstacle3Graphics ../Game_Data/Obstacles/Obstacle3.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimapsmall.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimapmedium.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimaplarge.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimaphuge.bmp
+Obstacle4Graphics ../Game_Data/Obstacles/Obstacle4.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimapsmall.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimapmedium.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimaplarge.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimaphuge.bmp
+Obstacle5Graphics ../Game_Data/Obstacles/Obstacle5.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimapsmall.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimapmedium.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimaplarge.bmp ../Game_Data/Obstacles/Obstacle0/Obstacle0Minimaphuge.bmp
 
 UnitMinimapGraphics
-Units/Player0small.bmp Units/Player0medium.bmp Units/Player0large.bmp Units/Player0huge.bmp
-Units/Player1small.bmp Units/Player1medium.bmp Units/Player1large.bmp Units/Player1huge.bmp
-Units/Player2small.bmp Units/Player2medium.bmp Units/Player2large.bmp Units/Player2huge.bmp
+../Game_Data/Units/Player0small.bmp ../Game_Data/Units/Player0medium.bmp ../Game_Data/Units/Player0large.bmp ../Game_Data/Units/Player0huge.bmp
+../Game_Data/Units/Player1small.bmp ../Game_Data/Units/Player1medium.bmp ../Game_Data/Units/Player1large.bmp ../Game_Data/Units/Player1huge.bmp
+../Game_Data/Units/Player2small.bmp ../Game_Data/Units/Player2medium.bmp ../Game_Data/Units/Player2large.bmp ../Game_Data/Units/Player2huge.bmp
 
 SlimeGraphics
 
 Player0
-Units/Slime/Player0/dying.bmp
-Units/Slime/Player0/standing.bmp
-Units/Slime/Player0/standing.bmp
-Units/Slime/Player0/standing.bmp
-Units/Slime/Player0/moving.bmp
-Units/Slime/Player0/moving.bmp
-Units/Slime/Player0/moving.bmp
-Units/Slime/Player0/fighting.bmp
-Units/Slime/UnitPicture.bmp
-Units/Slime/UnitMiniPic.bmp
-Units/Slime/UnitMiniPicSel.bmp
+../Game_Data/Units/Slime/Player0/dying.bmp
+../Game_Data/Units/Slime/Player0/standing.bmp
+../Game_Data/Units/Slime/Player0/standing.bmp
+../Game_Data/Units/Slime/Player0/standing.bmp
+../Game_Data/Units/Slime/Player0/moving.bmp
+../Game_Data/Units/Slime/Player0/moving.bmp
+../Game_Data/Units/Slime/Player0/moving.bmp
+../Game_Data/Units/Slime/Player0/fighting.bmp
+../Game_Data/Units/Slime/UnitPicture.bmp
+../Game_Data/Units/Slime/UnitMiniPic.bmp
+../Game_Data/Units/Slime/UnitMiniPicSel.bmp
 Player1
-Units/Slime/Player1/dying.bmp
-Units/Slime/Player1/standing.bmp
-Units/Slime/Player1/standing.bmp
-Units/Slime/Player1/standing.bmp
-Units/Slime/Player1/moving.bmp
-Units/Slime/Player1/moving.bmp
-Units/Slime/Player1/moving.bmp
-Units/Slime/Player1/fighting.bmp
-Units/Slime/UnitPicture.bmp
-Units/Slime/UnitMiniPic.bmp
-Units/Slime/UnitMiniPicSel.bmp
+../Game_Data/Units/Slime/Player1/dying.bmp
+../Game_Data/Units/Slime/Player1/standing.bmp
+../Game_Data/Units/Slime/Player1/standing.bmp
+../Game_Data/Units/Slime/Player1/standing.bmp
+../Game_Data/Units/Slime/Player1/moving.bmp
+../Game_Data/Units/Slime/Player1/moving.bmp
+../Game_Data/Units/Slime/Player1/moving.bmp
+../Game_Data/Units/Slime/Player1/fighting.bmp
+../Game_Data/Units/Slime/UnitPicture.bmp
+../Game_Data/Units/Slime/UnitMiniPic.bmp
+../Game_Data/Units/Slime/UnitMiniPicSel.bmp
 Player2
-Units/Slime/Player2/dying.bmp
-Units/Slime/Player2/standing.bmp
-Units/Slime/Player2/standing.bmp
-Units/Slime/Player2/standing.bmp
-Units/Slime/Player2/moving.bmp
-Units/Slime/Player2/moving.bmp
-Units/Slime/Player2/moving.bmp
-Units/Slime/Player2/fighting.bmp
-Units/Slime/UnitPicture.bmp
-Units/Slime/UnitMiniPic.bmp
-Units/Slime/UnitMiniPicSel.bmp
+../Game_Data/Units/Slime/Player2/dying.bmp
+../Game_Data/Units/Slime/Player2/standing.bmp
+../Game_Data/Units/Slime/Player2/standing.bmp
+../Game_Data/Units/Slime/Player2/standing.bmp
+../Game_Data/Units/Slime/Player2/moving.bmp
+../Game_Data/Units/Slime/Player2/moving.bmp
+../Game_Data/Units/Slime/Player2/moving.bmp
+../Game_Data/Units/Slime/Player2/fighting.bmp
+../Game_Data/Units/Slime/UnitPicture.bmp
+../Game_Data/Units/Slime/UnitMiniPic.bmp
+../Game_Data/Units/Slime/UnitMiniPicSel.bmp
 
 BoneMageGraphics
 
 Player0
-Units/BoneMage/Player0/dying.bmp
-Units/BoneMage/Player0/standing.bmp
-Units/BoneMage/Player0/standing.bmp
-Units/BoneMage/Player0/standing.bmp
-Units/BoneMage/Player0/moving.bmp
-Units/BoneMage/Player0/moving.bmp
-Units/BoneMage/Player0/moving.bmp
-Units/BoneMage/Player0/fighting.bmp
-Units/BoneMage/UnitPicture.bmp
-Units/BoneMage/UnitMiniPic.bmp
-Units/BoneMage/UnitMiniPicSel.bmp
+../Game_Data/Units/BoneMage/Player0/dying.bmp
+../Game_Data/Units/BoneMage/Player0/standing.bmp
+../Game_Data/Units/BoneMage/Player0/standing.bmp
+../Game_Data/Units/BoneMage/Player0/standing.bmp
+../Game_Data/Units/BoneMage/Player0/moving.bmp
+../Game_Data/Units/BoneMage/Player0/moving.bmp
+../Game_Data/Units/BoneMage/Player0/moving.bmp
+../Game_Data/Units/BoneMage/Player0/fighting.bmp
+../Game_Data/Units/BoneMage/UnitPicture.bmp
+../Game_Data/Units/BoneMage/UnitMiniPic.bmp
+../Game_Data/Units/BoneMage/UnitMiniPicSel.bmp
 Player1
-Units/BoneMage/Player1/dying.bmp
-Units/BoneMage/Player1/standing.bmp
-Units/BoneMage/Player1/standing.bmp
-Units/BoneMage/Player1/standing.bmp
-Units/BoneMage/Player1/moving.bmp
-Units/BoneMage/Player1/moving.bmp
-Units/BoneMage/Player1/moving.bmp
-Units/BoneMage/Player1/fighting.bmp
-Units/BoneMage/UnitPicture.bmp
-Units/BoneMage/UnitMiniPic.bmp
-Units/BoneMage/UnitMiniPicSel.bmp
+../Game_Data/Units/BoneMage/Player1/dying.bmp
+../Game_Data/Units/BoneMage/Player1/standing.bmp
+../Game_Data/Units/BoneMage/Player1/standing.bmp
+../Game_Data/Units/BoneMage/Player1/standing.bmp
+../Game_Data/Units/BoneMage/Player1/moving.bmp
+../Game_Data/Units/BoneMage/Player1/moving.bmp
+../Game_Data/Units/BoneMage/Player1/moving.bmp
+../Game_Data/Units/BoneMage/Player1/fighting.bmp
+../Game_Data/Units/BoneMage/UnitPicture.bmp
+../Game_Data/Units/BoneMage/UnitMiniPic.bmp
+../Game_Data/Units/BoneMage/UnitMiniPicSel.bmp
 Player2
-Units/BoneMage/Player2/dying.bmp
-Units/BoneMage/Player2/standing.bmp
-Units/BoneMage/Player2/standing.bmp
-Units/BoneMage/Player2/standing.bmp
-Units/BoneMage/Player2/moving.bmp
-Units/BoneMage/Player2/moving.bmp
-Units/BoneMage/Player2/moving.bmp
-Units/BoneMage/Player2/fighting.bmp
-Units/BoneMage/UnitPicture.bmp
-Units/BoneMage/UnitMiniPic.bmp
-Units/BoneMage/UnitMiniPicSel.bmp
+../Game_Data/Units/BoneMage/Player2/dying.bmp
+../Game_Data/Units/BoneMage/Player2/standing.bmp
+../Game_Data/Units/BoneMage/Player2/standing.bmp
+../Game_Data/Units/BoneMage/Player2/standing.bmp
+../Game_Data/Units/BoneMage/Player2/moving.bmp
+../Game_Data/Units/BoneMage/Player2/moving.bmp
+../Game_Data/Units/BoneMage/Player2/moving.bmp
+../Game_Data/Units/BoneMage/Player2/fighting.bmp
+../Game_Data/Units/BoneMage/UnitPicture.bmp
+../Game_Data/Units/BoneMage/UnitMiniPic.bmp
+../Game_Data/Units/BoneMage/UnitMiniPicSel.bmp
 
 DruffkloppaGraphics
 
 Player0
-Units/Druffkloppa/Player0/dying.bmp
-Units/Druffkloppa/Player0/standing.bmp
-Units/Druffkloppa/Player0/standing.bmp
-Units/Druffkloppa/Player0/standing.bmp
-Units/Druffkloppa/Player0/moving.bmp
-Units/Druffkloppa/Player0/moving.bmp
-Units/Druffkloppa/Player0/moving.bmp
-Units/Druffkloppa/Player0/fighting.bmp
-Units/Druffkloppa/UnitPicture.bmp
-Units/Druffkloppa/UnitMiniPic.bmp
-Units/Druffkloppa/UnitMiniPicSel.bmp
+../Game_Data/Units/Druffkloppa/Player0/dying.bmp
+../Game_Data/Units/Druffkloppa/Player0/standing.bmp
+../Game_Data/Units/Druffkloppa/Player0/standing.bmp
+../Game_Data/Units/Druffkloppa/Player0/standing.bmp
+../Game_Data/Units/Druffkloppa/Player0/moving.bmp
+../Game_Data/Units/Druffkloppa/Player0/moving.bmp
+../Game_Data/Units/Druffkloppa/Player0/moving.bmp
+../Game_Data/Units/Druffkloppa/Player0/fighting.bmp
+../Game_Data/Units/Druffkloppa/UnitPicture.bmp
+../Game_Data/Units/Druffkloppa/UnitMiniPic.bmp
+../Game_Data/Units/Druffkloppa/UnitMiniPicSel.bmp
 Player1
-Units/Druffkloppa/Player1/dying.bmp
-Units/Druffkloppa/Player1/standing.bmp
-Units/Druffkloppa/Player1/standing.bmp
-Units/Druffkloppa/Player1/standing.bmp
-Units/Druffkloppa/Player1/moving.bmp
-Units/Druffkloppa/Player1/moving.bmp
-Units/Druffkloppa/Player1/moving.bmp
-Units/Druffkloppa/Player1/fighting.bmp
-Units/Druffkloppa/UnitPicture.bmp
-Units/Druffkloppa/UnitMiniPic.bmp
-Units/Druffkloppa/UnitMiniPicSel.bmp
+../Game_Data/Units/Druffkloppa/Player1/dying.bmp
+../Game_Data/Units/Druffkloppa/Player1/standing.bmp
+../Game_Data/Units/Druffkloppa/Player1/standing.bmp
+../Game_Data/Units/Druffkloppa/Player1/standing.bmp
+../Game_Data/Units/Druffkloppa/Player1/moving.bmp
+../Game_Data/Units/Druffkloppa/Player1/moving.bmp
+../Game_Data/Units/Druffkloppa/Player1/moving.bmp
+../Game_Data/Units/Druffkloppa/Player1/fighting.bmp
+../Game_Data/Units/Druffkloppa/UnitPicture.bmp
+../Game_Data/Units/Druffkloppa/UnitMiniPic.bmp
+../Game_Data/Units/Druffkloppa/UnitMiniPicSel.bmp
 Player2
-Units/Druffkloppa/Player2/dying.bmp
-Units/Druffkloppa/Player2/standing.bmp
-Units/Druffkloppa/Player2/standing.bmp
-Units/Druffkloppa/Player2/standing.bmp
-Units/Druffkloppa/Player2/moving.bmp
-Units/Druffkloppa/Player2/moving.bmp
-Units/Druffkloppa/Player2/moving.bmp
-Units/Druffkloppa/Player2/fighting.bmp
-Units/Druffkloppa/UnitPicture.bmp
-Units/Druffkloppa/UnitMiniPic.bmp
-Units/Druffkloppa/UnitMiniPicSel.bmp
+../Game_Data/Units/Druffkloppa/Player2/dying.bmp
+../Game_Data/Units/Druffkloppa/Player2/standing.bmp
+../Game_Data/Units/Druffkloppa/Player2/standing.bmp
+../Game_Data/Units/Druffkloppa/Player2/standing.bmp
+../Game_Data/Units/Druffkloppa/Player2/moving.bmp
+../Game_Data/Units/Druffkloppa/Player2/moving.bmp
+../Game_Data/Units/Druffkloppa/Player2/moving.bmp
+../Game_Data/Units/Druffkloppa/Player2/fighting.bmp
+../Game_Data/Units/Druffkloppa/UnitPicture.bmp
+../Game_Data/Units/Druffkloppa/UnitMiniPic.bmp
+../Game_Data/Units/Druffkloppa/UnitMiniPicSel.bmp
 
 MainBuildingGraphics
 Player0
-Buildings/MainBuilding/Player0/graphic.bmp
-Buildings/MainBuilding/Player0/graphicInside.bmp
+../Game_Data/Buildings/MainBuilding/Player0/graphic.bmp
+../Game_Data/Buildings/MainBuilding/Player0/graphicInside.bmp
 Player1
-Buildings/MainBuilding/Player0/graphic.bmp
-Buildings/MainBuilding/Player0/graphicInside.bmp
+../Game_Data/Buildings/MainBuilding/Player0/graphic.bmp
+../Game_Data/Buildings/MainBuilding/Player0/graphicInside.bmp
 Player2
-Buildings/MainBuilding/Player0/graphic.bmp
-Buildings/MainBuilding/Player0/graphicInside.bmp
+../Game_Data/Buildings/MainBuilding/Player0/graphic.bmp
+../Game_Data/Buildings/MainBuilding/Player0/graphicInside.bmp
 
-Entity0Graphics	Entities/Entity0/Entity.bmp Entities/Entity0/Pic.bmp
-Entity1Graphics	Entities/Entity1/Entity.bmp Entities/Entity1/Pic.bmp
-Entity2Graphics	Entities/Entity2/Entity.bmp Entities/Entity2/Pic.bmp
-Entity3Graphics	Entities/Entity3/Entity.bmp Entities/Entity3/Pic.bmp
-Entity4Graphics	Entities/Entity4/Entity.bmp Entities/Entity4/Pic.bmp
-Entity5Graphics	Entities/Entity5/Entity.bmp Entities/Entity5/Pic.bmp
+Entity0Graphics	../Game_Data/Entities/Entity0/Entity.bmp ../Game_Data/Entities/Entity0/Pic.bmp
+Entity1Graphics	../Game_Data/Entities/Entity1/Entity.bmp ../Game_Data/Entities/Entity1/Pic.bmp
+Entity2Graphics	../Game_Data/Entities/Entity2/Entity.bmp ../Game_Data/Entities/Entity2/Pic.bmp
+Entity3Graphics	../Game_Data/Entities/Entity3/Entity.bmp ../Game_Data/Entities/Entity3/Pic.bmp
+Entity4Graphics	../Game_Data/Entities/Entity4/Entity.bmp ../Game_Data/Entities/Entity4/Pic.bmp
+Entity5Graphics	../Game_Data/Entities/Entity5/Entity.bmp ../Game_Data/Entities/Entity5/Pic.bmp
 
-BattleModeScreenBackground BattleGameBackground.bmp
-EnmptySector		   EmptySector.bmp
-blockedSecotr		   blockedSector.bmp
-BattleGameCursor	   Cursors/BattleGame.bmp
-forbiddenaas		   forbiddenMask.bmp
-readyButtonUnpushed	   readyButtonUnpushed.bmp
-readyButtonPushed	   readyButtonPushed.bmp
+BattleModeScreenBackground ../Game_Data/BattleGameBackground.bmp
+EnmptySector		 ../Game_Data/EmptySector.bmp
+blockedSecotr		 ../Game_Data/blockedSector.bmp
+BattleGameCursor	 ../Game_Data/Cursors/BattleGame.bmp
+forbiddenaas		 ../Game_Data/forbiddenMask.bmp
+readyButtonUnpushed	 ../Game_Data/readyButtonUnpushed.bmp
+readyButtonPushed	 ../Game_Data/readyButtonPushed.bmp

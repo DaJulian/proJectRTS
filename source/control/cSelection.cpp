@@ -3,13 +3,15 @@
 cSelection::cSelection()
 {
     pContent = NULL;
+    pBuildingContent = NULL;
     pLast = NULL;
     pNext = NULL;
 }
 
-cSelection::cSelection(cUnit* cont,cSelection* suc,cSelection* pre)
+cSelection::cSelection(cUnit* cont, cBuilding* contbui,cSelection* suc,cSelection* pre)
 {
     pContent = cont;
+    pBuildingContent = contbui;
     pLast = pre;
     pNext = suc;
 }
@@ -42,6 +44,15 @@ cSelection* cSelection::getPredecessor()
 void cSelection::setPredecessor(cSelection* pre)
 {
     pLast = pre;
+}
+
+cBuilding* cSelection::getBuildingContent()
+{
+    return pBuildingContent;
+}
+void cSelection::setBuildingContent(cBuilding* bui)
+{
+    pBuildingContent = bui;
 }
 
 void cSelection::Destroy()

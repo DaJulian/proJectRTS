@@ -8,11 +8,12 @@ cSelectionControl::cSelectionControl()
         selectedNumber[i] = 0;
         priorizedNumber[i] = 1;
         selectedTypes[i] = 1;
+        selectedBuildings[i] = 0;
     }
 
 }
 
-bool cSelectionControl::AddSelection(cUnit* Sel,int group)
+bool cSelectionControl::AddSelection(cUnit* Sel, cBuilding* buiSel,int group)
 {
     //Working pointers
     cSelection* newSelection;
@@ -28,18 +29,22 @@ bool cSelectionControl::AddSelection(cUnit* Sel,int group)
     }
 
     //Create a new List element
-    newSelection = new cSelection(Sel,NULL,LastInList);
+    newSelection = new cSelection(Sel, buiSel,NULL,LastInList);
     LastInList->setSucessor(newSelection);
 
     //increase list Number
     selectedNumber[group]++;
 
-    if(group ==0)Sel->setSelected(true);
+    if(group ==0)
+    {
+        if(Sel != NULL)Sel->setSelected(true);
+        if(buiSel != NULL)buiSel->setSelected(true);
+    }
 
     return 1;
 }
 
-bool cSelectionControl::RemoveSelection(cUnit* Sel,int group)
+bool cSelectionControl::RemoveSelection(cUnit* Sel,cBuilding* buiSel,int group)
 {
     //Working pointers
     cSelection* BeforeEntry;
@@ -54,7 +59,7 @@ bool cSelectionControl::RemoveSelection(cUnit* Sel,int group)
         toDelete = BeforeEntry->getSuccessor();
         if(toDelete == NULL){Error("UnSelection Error");return false;}
         //check if it is the searched item
-        if(toDelete->getContent() == Sel)
+        if(toDelete->getContent() == Sel && toDelete->getBuildingContent() == buiSel)
         {
             AfterEntry = toDelete->getSuccessor();
             break;
@@ -73,9 +78,20 @@ bool cSelectionControl::RemoveSelection(cUnit* Sel,int group)
     delete toDelete;
 
     //decrease list Number
-    selectedNumber[group]--;
+    if(Sel != NULL)
+    {
+        selectedNumber[group]--;
+    }
+    if(buiSel != NULL)
+    {
+        selectedBuildings[group]--;
+    }
 
-    if(group == 0){Sel->setSelected(false);}
+    if(group ==0)
+    {
+        if(Sel != NULL)Sel->setSelected(false);
+        if(buiSel != NULL)buiSel->setSelected(false);
+    }
 
     return 1;
 }
@@ -95,12 +111,16 @@ bool cSelectionControl::AddSelectionByTile(cTile* Tile,int owner,int group)
             for(int i=1;i<=selectedNumber[group];i++)
             {
                 LastInList = LastInList->getSuccessor();
+                if(LastInList->getBuildingContent() != NULL)
+                {
+                    RemoveSelection(NULL,LastInList->getBuildingContent(),group);
+                }
                 //Element should not be 0
                 if(LastInList==NULL){Error("Selection Error");return false;}
             }
 
             //Create a new List element
-            newSelection = new cSelection(Tile->getContainUnit(),NULL,LastInList);
+            newSelection = new cSelection(Tile->getContainUnit(),NULL,NULL,LastInList);
             LastInList->setSucessor(newSelection);
 
             //increase list Number
@@ -108,6 +128,31 @@ bool cSelectionControl::AddSelectionByTile(cTile* Tile,int owner,int group)
 
             //TEST
             if(group == 0){Tile->getContainUnit()->setSelected(true);}
+        }
+    }
+
+    if(Tile->getContainBuilding()!=NULL && selectedNumber[group] == 0)
+    {
+        if(Tile->getContainBuilding()->getOwner() == owner)
+        {
+            //cycle until end of list
+            LastInList = pListHead[group];
+            for(int i=1;i<=selectedNumber[group];i++)
+            {
+                LastInList = LastInList->getSuccessor();
+                //Element should not be 0
+                if(LastInList==NULL){Error("Selection Error");return false;}
+            }
+
+            //Create a new List element
+            newSelection = new cSelection(NULL,Tile->getContainBuilding(),NULL,LastInList);
+            LastInList->setSucessor(newSelection);
+
+            //increase list Number
+            selectedBuildings[group]++;
+
+            //TEST
+            if(group == 0){Tile->getContainBuilding()->setSelected(true);}
         }
     }
 
@@ -169,9 +214,13 @@ bool cSelectionControl::ClearSelection(int group)
     while(toDelete != NULL)
     {
         //TEST
-        if(group == 0){toDelete->getContent()->setSelected(false);}
+        if(group ==0)
+        {
+            if(toDelete->getContent() != NULL)toDelete->getContent()->setSelected(false);
+            if(toDelete->getBuildingContent() != NULL)toDelete->getBuildingContent()->setSelected(false);
+        }
         //Store next Item
-        NextInList=toDelete->getSuccessor();
+        NextInList = toDelete->getSuccessor();
         //Delete the Item
         toDelete->Destroy();
         delete toDelete;
@@ -181,6 +230,7 @@ bool cSelectionControl::ClearSelection(int group)
 
     //Set List to be empty
     selectedNumber[group] = 0;
+    selectedBuildings[group] = 0;
     pListHead[group]->setSucessor(NULL);
     priorizedNumber[group] = 1;
     selectedTypes[group] = 1;
@@ -199,7 +249,7 @@ void cSelectionControl::copySelection(int sourceGroup,int targetGroup)
     for(int i=1;i <= selectedNumber[sourceGroup]; i++)
     {
         sel = sel->getSuccessor();
-        AddSelection(sel->getContent(),targetGroup);
+        AddSelection(sel->getContent(),sel->getBuildingContent(),targetGroup);
     }
     priorizedNumber[targetGroup] = priorizedNumber[sourceGroup];
     selectedTypes[targetGroup] = selectedTypes[sourceGroup];
@@ -213,8 +263,8 @@ void cSelectionControl::AddSelectionFromGroup(int sourceGroup,int targetGroup)
     for(int i=1;i <= selectedNumber[sourceGroup]; i++)
     {
         sel = sel->getSuccessor();
-        RemoveSelection(sel->getContent(),targetGroup);
-        AddSelection(sel->getContent(),targetGroup);
+        RemoveSelection(sel->getContent(),sel->getBuildingContent(),targetGroup);
+        AddSelection(sel->getContent(),sel->getBuildingContent(),targetGroup);
     }
 }
 

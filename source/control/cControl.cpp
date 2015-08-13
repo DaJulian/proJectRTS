@@ -191,8 +191,8 @@ bool cControl::InitControl()
     {
         EntityList[i] = NULL;
     }
-    shiftX = 0;
-    shiftY = 0;
+    screenJumpRelativeX = 0;
+    screenJumpRelativeY = 0;
 
     //Initialize the pathFinder TODO more things then just map
     pathFindObj.Init();
@@ -604,8 +604,8 @@ bool cControl::DoControl(Uint32 t,int scrX,int scrY,bool* TermGame,bool* SelectT
     }
     if(*jumpGroup == true)
     {
-        if(selectedNumber[GroupNumber] > 0) shiftX = CenterMassX(GroupNumber) - SCR_TILE_WIDTH/2 - scrX;
-        if(selectedNumber[GroupNumber] > 0) shiftY = CenterMassY(GroupNumber) - SCR_TILE_HEIGHT/2 -scrY;
+        if(selectedNumber[GroupNumber] > 0) screenJumpRelativeX = CenterMassX(GroupNumber) - SCR_TILE_WIDTH/2 - scrX;
+        if(selectedNumber[GroupNumber] > 0) screenJumpRelativeY = CenterMassY(GroupNumber) - SCR_TILE_HEIGHT/2 -scrY;
         *jumpGroup = false;
     }
     if(*SelectMiniPic == true)
@@ -623,7 +623,7 @@ bool cControl::DoControl(Uint32 t,int scrX,int scrY,bool* TermGame,bool* SelectT
             }
             Uni = sel->getContent();
             ClearSelection(0);
-            AddSelection(Uni,0);
+            AddSelection(Uni,NULL,0);
         }
         else{ClearSelection(0);}
         *SelectMiniPic = false;
@@ -1007,7 +1007,7 @@ void cControl::DestoryUnit(cUnit* Unit)
     {
         for(int i=0;i<=10;i++)
         {
-            RemoveSelection(Unit,i);
+            RemoveSelection(Unit,NULL,i);
         }
     }
     IDListed[Unit->getID()] = NULL;

@@ -26,6 +26,8 @@ protected:
     bool accessedByActivePlayer;
     int posiX;
     int posiY;
+
+    bool selected;
 public:
     cBuilding();
     cBuilding(int typ,int own, int sizX, int sizY);
@@ -39,6 +41,10 @@ public:
     int getPositionY();
 
     bool checkAccess(int own);
+
+    void setSelected(bool sel);
+    bool checkSelected();
+
 };
 
 #endif // CBUILDING_H_INCLUDED
