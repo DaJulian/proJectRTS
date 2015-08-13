@@ -55,6 +55,8 @@
 		<Unit filename="model/cBuilding.h" />
 		<Unit filename="model/cEntity.cpp" />
 		<Unit filename="model/cEntity.h" />
+		<Unit filename="model/cGameModel.cpp" />
+		<Unit filename="model/cGameModel.h" />
 		<Unit filename="model/cObject.cpp" />
 		<Unit filename="model/cObject.h" />
 		<Unit filename="model/cObstacle.cpp" />
@@ -79,6 +81,8 @@
 		<Unit filename="tools.h" />
 		<Unit filename="view/cEvent.cpp" />
 		<Unit filename="view/cEvent.h" />
+		<Unit filename="view/cInput.cpp" />
+		<Unit filename="view/cInput.h" />
 		<Unit filename="view/cOutput.cpp" />
 		<Unit filename="view/cOutput.h" />
 		<Unit filename="view/cSurface.cpp" />

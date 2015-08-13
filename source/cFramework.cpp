@@ -38,17 +38,15 @@ bool cFramework::InitFramework()
     f.close();
 
     //Initializing the actual game
-    if((InitControl()) == false){ Error("Error initializing Control Settings");return false;}
-    MapInit();
+    if((controlObject.InitControl(&viewObject, &gameModelObj)) == false){ Error("Error initializing Control Settings");return false;}
+    controlObject.MapInit();
     //Initializing the output
-    if((InitVideo(&MapObj,thisUser)) == false){ Error("Error initializing Video Settings");return false;}
-    //Initializing the input
-    if((InitInput()) == false){ Error("Error initializing Input Settings");return false;}
+    if((viewObject.InitView(&gameModelObj, controlObject.getUser())) == false){ Error("Error initializing view Settings");return false;}
 
-    InitSettingsBattleGame(UnitMovementSpeed,health,mana,healthreg,manareg,damage
+    cBattleGame.InitSettingsBattleGame(UnitMovementSpeed,health,mana,healthreg,manareg,damage
                            ,sightRange,Armor,Magicarmor,tauntRange,sortPriority,NumberOfAblilites
                            ,UnitCost,BuildingTime,attackSpeed,attackRange,ManaCost,UnitEntityType);
-    InitBattleGame(thisUser,&MapObj);
+    cBattleGame.InitBattleGame(thisUser,&MapObj);
 
     Error("all initialized");
 
@@ -117,15 +115,19 @@ bool cFramework::DoFrame()
     //Handle Input
     Error("DoInput");
 
-    if((DoInput(frameLength,&screenJumpRelativeX,&screenJumpRelativeY)) == false){ Error("Error handling input"); return false;}
+    //if((DoInput(frameLength,&screenJumpRelativeX,&screenJumpRelativeY)) == false){ Error("Error handling input"); return false;}
     //Draw Graphics
     Error("DoDrawing");
-    if((drawFrame(frameLength,MouseX,MouseY,cursorType,screenX,screenY,&doDrawRect,&DrawRect,pListHead[0],selectedNumber[0],selectedBuildings[0],selectedTypes[0],priorizedNumber[0]
-        ,EntityList,NumberOfEntities,drawAoe)) == false){ Error("Error drawing"); return false;}
+    //if((drawFrame(frameLength,MouseX,MouseY,cursorType,screenX,screenY,&doDrawRect,&DrawRect,pListHead[0],selectedNumber[0],selectedBuildings[0],selectedTypes[0],priorizedNumber[0]
+    //    ,EntityList,NumberOfEntities,drawAoe)) == false){ Error("Error drawing"); return false;}
+    if(!(viewObject.DoFrameView(frameLength))){Error("Error drawing and inputing");}
+
+
     //Mangae the actual game
     Error("DoControl");
-    if((DoControl(frameLength,screenX,screenY,&bTerminateGame,&bSelect, &selMiniPic,selMiniPicNumber, &SelectRect, &selectOnlySpecificUnit, &SelectSpecificRect, specificUnitX,specificUnitY, &doMove,&attackMove,&stopMove
-                  ,moveCommandX,moveCommandY,&GetGroup,&SetGroup,&JumpGroup,GroupNumber,&keyShift,&doSelectionCycle,&changeAbility,&castMove)) == false){ Error("Error In DoControl()"); return false;}
+    //if((DoControl(frameLength,screenX,screenY,&bTerminateGame,&bSelect, &selMiniPic,selMiniPicNumber, &SelectRect, &selectOnlySpecificUnit, &SelectSpecificRect, specificUnitX,specificUnitY, &doMove,&attackMove,&stopMove
+    //              ,moveCommandX,moveCommandY,&GetGroup,&SetGroup,&JumpGroup,GroupNumber,&keyShift,&doSelectionCycle,&changeAbility,&castMove)) == false){ Error("Error In DoControl()"); return false;}
+    if(!(controlObject.DoControl(frameLength))){Error("Error drawing and inputing");}
 
     Error("all done");
     return 1;

@@ -23,7 +23,7 @@ cOutput::cOutput()
     pMapObj = NULL;
 }
 
-bool cOutput::InitVideo(cWorldMap* pMap,int own)
+bool cOutput::InitVideo(cGameModel* pMod, int own)
 {
     //TODO
     thisOwner = own;
@@ -266,7 +266,7 @@ bool cOutput::InitVideo(cWorldMap* pMap,int own)
     SDL_ShowCursor(0);
 
     //Initialize the pointer on the map
-    pMapObj = pMap;
+    pGameModel = pMod;
 
     if((HudGraphic = cSurface::Load(HudGraphicFile)) == NULL) {Error("Fehler beim Laden der HUD Graphic");return false;}
     if((selectionFrame = cSurface::Load(selectionFrameFile)) == NULL) {Error("Fehler beim Laden der selectionFrame");return false;}
@@ -362,16 +362,15 @@ bool cOutput::InitVideo(cWorldMap* pMap,int own)
 	return 1;
 }
 
-bool cOutput::drawFrame(Uint32 ticks,int mouseX,int mouseY,int cursorType,int scrX, int scrY,bool* bDrawSelectionRect
-                        ,SDL_Rect* SelectionRect,cSelection* selListHead,int selectedNumber, int selectedBuildings,int typeNumbers,int priorizedNumber,cEntity* EntityList[MAX_ENT],int numEnt,int drawAoe)
+bool cOutput::drawFrame(Uint32 ticks)
 {
-    drawMap(scrX,scrY);
-    drawEntities(EntityList,numEnt,scrX,scrY);
+    drawMap();
+    drawEntities();
     if(*bDrawSelectionRect==true){ drawSelectionRectangle(SelectionRect); }
 
     if(selectedNumber > 0)
     {
-        drawUnitHud(ticks,selListHead,selectedNumber,typeNumbers,priorizedNumber);
+        drawUnitHud();
     }
     else if(selectedBuildings > 0)
     {
@@ -392,15 +391,15 @@ bool cOutput::drawFrame(Uint32 ticks,int mouseX,int mouseY,int cursorType,int sc
     return 1;
 }
 
-void cOutput::drawUnitHud(Uint32 ticks,cSelection* selListHead,int selectedUnitNumber,int typeNumbers,int priorizedNumber )
+void cOutput::drawUnitHud(Uint32 ticks)
 {
-    drawUnitPictureAndDescription(ticks,selListHead,priorizedNumber);
-    drawUnitMinipictures(selListHead,selectedUnitNumber,typeNumbers,priorizedNumber);
+    drawUnitPictureAndDescription(ticks);
+    drawUnitMinipictures();
     ///TODO draw general Grid for all units
     //drawGrid()
 }
 
-void cOutput::drawUnitPictureAndDescription(Uint32 ticks,cSelection* selListHead, int priorizedNumber)
+void cOutput::drawUnitPictureAndDescription(Uint32 ticks)
 {
     if(selListHead->getSuccessor() != NULL)
     {
@@ -428,7 +427,7 @@ void cOutput::drawUnitPictureAndDescription(Uint32 ticks,cSelection* selListHead
     }
 }
 
-    //Draw the minimap
+//Draw the minimap
 void cOutput::InitMinimap()
 {
     cTile* position;
@@ -465,18 +464,18 @@ void cOutput::InitMinimap()
     }
 }
 
-void cOutput::drawMap(int screenX,int screenY)
+void cOutput::drawMap()
 {
     cSurface::Draw(mScreen,HudGraphic,0,0);
-    drawBackgroundAndMinimap(screenX,screenY);
+    drawBackgroundAndMinimap();
     processSightMask();
     drawUnitsToMinimap();
-    drawObjectsToScreen(screenX, screenY);
-    drawScreenRectangleToMinimap(screenX, screenY);
-    drawSightmask(screenX, screenY);
+    drawObjectsToScreen();
+    drawScreenRectangleToMinimap();
+    drawSightmask();
 }
 
-void cOutput::drawBackgroundAndMinimap(int screenX,int screenY)
+void cOutput::drawBackgroundAndMinimap()
 {
     int tileType;
     int containType;
@@ -577,7 +576,7 @@ void cOutput::drawUnitsToMinimap()
     }
 }
 
-void cOutput::drawObjectsToScreen(int screenX,int screenY)
+void cOutput::drawObjectsToScreen()
 {
     SDL_Surface* Object;
     cUnit* Unit;
@@ -797,7 +796,7 @@ int cOutput::checkSightPathDifferenceSign(int goal, int source)
     return 0;
 }
 
-void cOutput::drawScreenRectangleToMinimap(int screenX,int screenY)
+void cOutput::drawScreenRectangleToMinimap()
 {
     SDL_Rect minimaprect;
 
@@ -809,7 +808,7 @@ void cOutput::drawScreenRectangleToMinimap(int screenX,int screenY)
     cSurface::DrawRectangle(mScreen,&minimaprect,150,1);
 }
 
-void cOutput::drawSightmask(int screenX, int screenY)
+void cOutput::drawSightmask()
 {
     SDL_Surface* Minmap;
     SDL_Surface* Tile;
@@ -971,7 +970,7 @@ void cOutput::drawUnitDescription(cUnit* selectedUnit)
     }
 }
 
-void cOutput::drawUnitMinipictures(cSelection* selListHead,int selectedUnitNumber,int typeNumbers,int priorizedNumber)
+void cOutput::drawUnitMinipictures()
 {
     cSelection* thisSel;
     thisSel = selListHead;
@@ -1106,7 +1105,7 @@ void cOutput::drawGrid(cUnit* selectedUnit,Uint32 t)
     cSurface::Draw(mScreen,GridAnim,printX,printY,takeX,takeY,GRID_PIC_WIDTH,GRID_PIC_HEIGHT);
 }
 
-void cOutput::drawEntities(cEntity* EntityList[MAX_ENT],int numEnt,int screenX, int screenY)
+void cOutput::drawEntities()
 {
     cEntity* Entity;
     int enttype;
@@ -1116,7 +1115,7 @@ void cOutput::drawEntities(cEntity* EntityList[MAX_ENT],int numEnt,int screenX, 
     for(int i=0;i<numEnt;i++)
     {
         //read the Unit
-        Entity = EntityList[i];
+        Entity = pGameModel->getEntity(i);
         //read the obj and actiontype
         enttype = Entity->getType();
 
@@ -1209,6 +1208,20 @@ void cOutput::drawFrameBattleGameScreen(Uint32 ticks,int mouseX,int mouseY,int U
 
     //Show the new screen
     SDL_Flip(mScreen);
+}
+
+void setDrawAoe(int aoe)
+{
+    drawAoe = aoe;
+}
+
+void setSelection(cSelection* selectionListH, int selectedNum, int selectedBui, int typeNum, int priorizedNum)
+{
+    selectionListHead = selectionListH;
+    selectedNumber = selectedNum;
+    selectedBuildings = selectedBui;
+    typeNumbers = typeNum;
+    priorizedNumber = priorizedNum;
 }
 
 bool cOutput::CleanUpVideo()

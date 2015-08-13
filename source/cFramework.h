@@ -6,12 +6,18 @@
 #include "control/cControl.h"
 #include "control/cBattleGame.h"
 
-class cFramework : public cView, public cOutput, public cControl, public cBattleGame
+class cFramework //: public cView, public cOutput, public cControl, public cBattleGame
 {
 protected:
     Uint32 TimeThisFrame;
     Uint32 TimeLastFrame;
     Uint32 frameLength;
+
+    cView viewObject;
+    cControl controlObject;
+    cGameModel gameModelObj;
+    cBattleGame battleGameObject;
+
 public:
     cFramework();
 

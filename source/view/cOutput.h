@@ -1,13 +1,12 @@
 #ifndef COUTPUT_H_INCLUDED
 #define COUTPUT_H_INCLUDED
 
-#include "../model/cWorldMap.h"
 #include "../control/cSelection.h"
 #include "cSurface.h"
-#include "../model/cEntity.h"
-#include "../model/cBuilding.h"
+#include "../model/cGameModel.h"
+#include "cInput.h"
 
-class cOutput
+class cOutput : public cInput
 {
     protected:
         //Screen SUrface
@@ -63,7 +62,7 @@ class cOutput
         SDL_Surface* mMinimap;
 
         //Map Object
-        cWorldMap* pMapObj;
+        cGameModel* pGameModel;
 
         //fog of war mask
         int sightMask[MAX_WORLD_WIDTH][MAX_WORLD_HEIGHT];
@@ -93,38 +92,45 @@ class cOutput
         SDL_Surface* cursorGraphicBattleGame;
         SDL_Surface* forbiddenMask;
         SDL_Surface* readyButton[2];
+
+        cSelection* selectionListHead;
+        int selectedNumber;
+        int selectedBuildings;
+        int typeNumbers;
+        int priorizedNumber;
+
+        int drawAoe;
+
     public:
         cOutput();
 
-        bool drawFrame(Uint32 tick,int MouseX,int Mmousey,int cursorType,int scrX, int scrY,bool* bDrawSelectionRect
-                       ,SDL_Rect* SelectionRect,cSelection* selListHead,int selectedNumber, int selectedBuildings,int typeNumbers,
-                       int priorizedNumber,cEntity* EntityList[MAX_ENT],int numEnt,int drawAoe);
+        bool drawFrame(Uint32 tick);
         void drawFrameBattleGameScreen(Uint32 ticks,int mouseX,int mouseY,int Units[MAX_UNITS],int placeNum
                                        ,bool clickReady,int startSector[START_SECTOR_X_MAX][START_SECTOR_Y_MAX]
                                        ,int placeUnit);
 
-        bool InitVideo(cWorldMap* pMap,int own);
+        bool InitVideo(cGameModel* pMod,int own);
         bool CleanUpVideo();
 
         void InitMinimap();
 
-        void drawMap(int screenX,int screenY);
-        void drawBackgroundAndMinimap(int screenX,int screenY);
+        void drawMap();
+        void drawBackgroundAndMinimap();
         void drawUnitsToMinimap();
-        void drawObjectsToScreen(int screenX,int screenY);
-        void drawScreenRectangleToMinimap(int screenX,int screenY);
-        void drawSightmask(int screenX,int screenY);
+        void drawObjectsToScreen();
+        void drawScreenRectangleToMinimap();
+        void drawSightmask();
 
-        void drawEntities(cEntity* EntityList[MAX_ENT],int numEnt,int screenX, int screenY);
+        void drawEntities();
 
         void drawSelectionRectangle(SDL_Rect* Rect);
 
         void drawHealthBars(cUnit* Unit,int dX, int dY);
 
-        void drawUnitHud(Uint32 tick,cSelection* selListHead,int selectedUnitNumber,int typeNumbers,int priorizedNumber);
+        void drawUnitHud(Uint32 tick);
         void drawUnitDescription(cUnit* selectedUnit);
-        void drawUnitPictureAndDescription(Uint32 tick,cSelection* selListHead, int priorizedNumber);
-        void drawUnitMinipictures(cSelection* selListHead,int selectedUnitNumber,int typeNumbers,int priorizedNumber);
+        void drawUnitPictureAndDescription(Uint32 tick);
+        void drawUnitMinipictures();
         void drawGrid(cUnit* selectedUnit,Uint32 t);
         void applyDrawAoe(int posX,int posY,int rangeSq);
 
@@ -134,6 +140,10 @@ class cOutput
         void processSightMask();
         bool checkSightPath(int goalX, int goalY, int sourceX, int sourceY);
         int checkSightPathDifferenceSign(int goal, int source);
+
+        void setDrawAoe(int aoe);
+
+        void setSelection(cSelection* selectionListH, int selectedNum, int selectedBui, int typeNum, int priorizedNum);
 };
 
 #endif // COUTPUT_H_INCLUDED

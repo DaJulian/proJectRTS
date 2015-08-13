@@ -195,6 +195,12 @@
 #define GRID_HALFSPACE_X 1
 #define GRID_HALFSPACE_Y 1
 
+#define SCREEN_REPLAY 0
+#define SCREEN_BATTLE_GAME 1
+#define SCREEN_MAP_UNIT 2
+#define SCREEN_MAP_BUILDING 3
+#define SCREEN_INN 4
+
 //Battle Game screen settings
 #define BATTLE_GAME_TIME 60000
 
