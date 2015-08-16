@@ -3,60 +3,54 @@
 
 #include "../global.h"
 #include "../tools.h"
-#include "../model/cWorldMap.h"
+#include "../model/cGameModel.h"
+#include "../view/cInput.h"
+
+/*struct sBattleGameInputs
+{
+    //battle game input Variables
+    bool clickBattleGameReady;
+
+    int BuyUnits;
+    int SellUnits;
+    int placeUnit;
+    int placeUnitX;
+    int placeUnitY;
+    int removeUnitX;
+    int removeUnitY;
+};*/
+
+struct sBattleGameModel
+{
+    bool ready;
+    int readyUnits[MAX_UNITS];
+    int startSector[START_SECTOR_X_MAX][START_SECTOR_Y_MAX];
+    int money;
+    int timer;
+};
 
 class cBattleGame
 {
 protected:
-    int timer;
-    int money;
-    int startSector[START_SECTOR_X_MAX][START_SECTOR_Y_MAX];
     bool bdoBattleGameScreen;
-    bool ready;
-    int readyUnits[MAX_UNITS];
-    int BuyUnits;
-    int SellUnits;
-    int placeUnitsX;
-    int placeUnitsY;
-    int placeUnit;
-    int removeUnitX;
-    int removeUnitY;
 
-    //Settings from Control
-    int bGUnitMovementSpeed[UNIT_TYPE_MAX];
-    int bGhealth[UNIT_TYPE_MAX];
-    int bGmana[UNIT_TYPE_MAX];
-    int bGhealthreg[UNIT_TYPE_MAX];
-    int bGmanareg[UNIT_TYPE_MAX];
-    int bGdamage[UNIT_TYPE_MAX];
-    int bGsightRange[UNIT_TYPE_MAX];
-    int bGArmor[UNIT_TYPE_MAX];
-    int bGMagicarmor[UNIT_TYPE_MAX];
-    int bGtauntRange[UNIT_TYPE_MAX];
-    int bGsortPriority[UNIT_TYPE_MAX];
-    int bGNumberOfAblilites[UNIT_TYPE_MAX];
-    int bGUnitCost[UNIT_TYPE_MAX];
-    int bGBuildingTime[UNIT_TYPE_MAX];
+    sBattleGameInputs* pBattleGameInputs;
+    sBattleGameModel battleGameModel;
 
-    int bGattackSpeed[UNIT_TYPE_MAX][ABILITY_MAX];
-    int bGattackRange[UNIT_TYPE_MAX][ABILITY_MAX];
-    int bGManaCost[UNIT_TYPE_MAX][ABILITY_MAX];
-    int bGUnitEntityType[UNIT_TYPE_MAX][ABILITY_MAX];
-
-    int bGUnitAnimSteps[UNIT_TYPE_MAX][NMBR_ACTIONS];
-    int bGUnitAnimDuration[UNIT_TYPE_MAX][NMBR_ACTIONS];
+    sUnitSpecifications* pUnitSpecifications;
 
 public:
-    void InitSettingsBattleGame(int UMS[UNIT_TYPE_MAX],int he[UNIT_TYPE_MAX],int ma[UNIT_TYPE_MAX],int hr[UNIT_TYPE_MAX],
-                        int mr[UNIT_TYPE_MAX],int da[UNIT_TYPE_MAX],int sR[UNIT_TYPE_MAX],int Ar[UNIT_TYPE_MAX],
-                        int Marm[UNIT_TYPE_MAX],
-                        int tR[UNIT_TYPE_MAX],int sP[UNIT_TYPE_MAX],int NOfAb[UNIT_TYPE_MAX],int UC[UNIT_TYPE_MAX],
-                        int BTime[UNIT_TYPE_MAX],int aSpeed[UNIT_TYPE_MAX][ABILITY_MAX],int aRange[UNIT_TYPE_MAX][ABILITY_MAX],
-                        int MCost[UNIT_TYPE_MAX][ABILITY_MAX],int UEType[UNIT_TYPE_MAX][ABILITY_MAX]);
+    void InitSettingsBattleGame(sUnitSpecifications* pUnitSpec);
 
-    void InitBattleGame(int User,cWorldMap* pMap);
-    bool DoFrameBattleGameScreen(Uint32 t,bool* setReady);
+    void InitBattleGame(int User ,cWorldMap* pMap, sBattleGameInputs* batinp);
+    bool DoFrameBattleGameScreen(Uint32 t);
+
+    sBattleGameModel* getBattleGameModel();
+
     void FinalizeBattleGamePreparations();
+
+    bool checkRun();
+    void setRun(bool ru);
 };
 
 #endif // CBATTLEGAME_H_INCLUDED

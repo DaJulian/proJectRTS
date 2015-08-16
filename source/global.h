@@ -201,6 +201,8 @@
 #define SCREEN_MAP_BUILDING 3
 #define SCREEN_INN 4
 
+#define SCROLL_MARGIN 10
+
 //Battle Game screen settings
 #define BATTLE_GAME_TIME 60000
 

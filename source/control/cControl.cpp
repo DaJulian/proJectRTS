@@ -13,7 +13,11 @@ bool cControl::InitControl(cView* pViewObj, cGameModel* pGameModelObj)
     bStartSignal = false;
     pView->setDrawAoe(-1);
 
-    GameModelObj.InitGameModel();
+    pGameModel->InitGameModel();
+
+    pMousePosition = pView->getMousePosition();
+    pUnitSelectionInputs = pView->getUnitSelectionInputs();
+    pScrollInputs = pView->getScrollInputs();
 
     std::string garbage;
     std::fstream f;
@@ -52,11 +56,12 @@ bool cControl::InitControl(cView* pViewObj, cGameModel* pGameModelObj)
         ReplayObj.InitWrite();
     }
 
-    pView->setScreenJumpRelative(0,0);
+    pScrollInputs->screenJumpRelativeX = 0;
+    pScrollInputs->screenJumpRelativeY = 0;
 
     //Initialize the pathFinder TODO more things then just map
     pathFindObj.Init();
-    pathFindObj.setMap(GameModelObj.GetMapObject());
+    pathFindObj.setMap(pGameModel->getMapObj());
 
     return 1;
 }
@@ -71,7 +76,7 @@ void cControl::LoadStandardOpponent()
 
 }
 
-void cControl::InitUnits(int User,int InitSector[START_SECTOR_X_MAX][START_SECTOR_Y_MAX])
+void cControl::InitUnits(int InitSector[START_SECTOR_X_MAX][START_SECTOR_Y_MAX])
 {
     Change* newChange;
     Command* newCommand;
@@ -87,20 +92,20 @@ void cControl::InitUnits(int User,int InitSector[START_SECTOR_X_MAX][START_SECTO
                     newChange = new Change;
                     newChange->UnitID = ID;
                     ID++;
-                    if(User ==1)
+                    if(thisUser == 1)
                     {
                         newChange->posiX = PLAYER_1_START_X+i;
                         newChange->posiY = PLAYER_1_START_Y+j;
 
                     }
-                    if(User ==2)
+                    if(thisUser == 2)
                     {
                         newChange->posiX = PLAYER_2_START_X+i;
                         newChange->posiY = PLAYER_2_START_Y+j;
 
                     }
 
-                    newChange->goalX = User;
+                    newChange->goalX = thisUser;
                     newChange->goalY = 0;
                     newChange->goalUnitID = InitSector[i][j];
                     newChange->time = 0;
@@ -114,20 +119,20 @@ void cControl::InitUnits(int User,int InitSector[START_SECTOR_X_MAX][START_SECTO
                     newCommand = new Command;
                     newCommand->commandType = COMMAND_INIT_SPAWN;
                     //ID++;
-                    if(User ==1)
+                    if(thisUser ==1)
                     {
                         newCommand->posiX = PLAYER_1_START_X+i;
                         newCommand->posiY = PLAYER_1_START_Y+j;
 
                     }
-                    if(User ==2)
+                    if(thisUser ==2)
                     {
                         newCommand->posiX = PLAYER_2_START_X+i;
                         newCommand->posiY = PLAYER_2_START_Y+j;
 
                     }
                     newCommand->UnitID = InitSector[i][j];
-                    newCommand->goalX = User;
+                    newCommand->goalX = thisUser;
                     newCommand->goalY = 0;
                     newCommand->priority = 0;
                     newCommand->time = 0;
@@ -136,14 +141,14 @@ void cControl::InitUnits(int User,int InitSector[START_SECTOR_X_MAX][START_SECTO
             }
         }
     }
-    newestID = ID;
+    pGameModel->setNewestID(ID);
     if(CONTROL_SETTINGS == MODE_SERVER || CONTROL_SETTINGS == MODE_SINGPLAY)
     {
         cChangeList bufferList;
         Change* giveNext;
         while((giveNext = changeListObj.getFirst())!=NULL)
         {
-            CreateUnit(giveNext->UnitID,giveNext->goalUnitID,giveNext->posiX,giveNext->posiY,giveNext->goalX);
+            pGameModel->CreateUnit(giveNext->UnitID,giveNext->goalUnitID,giveNext->posiX,giveNext->posiY,giveNext->goalX);
             bufferList.Add(giveNext);
         }
         while((giveNext = bufferList.getFirst())!=NULL)
@@ -153,13 +158,11 @@ void cControl::InitUnits(int User,int InitSector[START_SECTOR_X_MAX][START_SECTO
     }
 
     ///TODO just a test
-    CreateBuilding(0,6,6,1);
+    pGameModel->CreateBuilding(0,6,6,1);
 
 }
 
-bool cControl::DoControl(Uint32 t,int scrX,int scrY,bool* TermGame,bool* SelectTile, bool* SelectMiniPic, int PicNumber,
-                         SDL_Rect* SelectRect,bool* selectSpecificUnit, SDL_Rect* SpecificUnitRect,int specX,int specY,bool* doMove,bool* doAttack,bool* doStop,int moveX,int moveY,
-                         bool* getGroup,bool* setGroup,bool* jumpGroup, int GroupNumber, bool* ShiftDown,bool *doCycleSel, int* activateCommand, int* doCast)
+bool cControl::DoControl(Uint32 t, bool* TermGame )
 {
     //Update the overall time
     TimeSinceStart += t;
@@ -173,14 +176,14 @@ bool cControl::DoControl(Uint32 t,int scrX,int scrY,bool* TermGame,bool* SelectT
         *TermGame = false;
     }
 
-    if(*doCycleSel == true)
+    if(pUnitSelectionInputs->doSelectionCycle)
     {
         cyclePriorization(0);
-        *doCycleSel = false;
+        pUnitSelectionInputs->doSelectionCycle = false;
     }
 
     //Check if the new cast command can actually be cast right now; if not undo the command
-    if(*doCast != -1 && checkNewSpell == true)
+    if(pUnitSelectionInputs->castMove != -1 && checkNewSpell == true)
     {
         cSelection* toMove;
         toMove = getFirstPriorizedUnit(0);
@@ -192,7 +195,7 @@ bool cControl::DoControl(Uint32 t,int scrX,int scrY,bool* TermGame,bool* SelectT
         {
             if(toMove->getContent()!=NULL && toMove->getContent()->getType() == ThisType)
             {
-                if(checkCastable(toMove->getContent(),*doCast))
+                if(checkCastable(toMove->getContent(),pUnitSelectionInputs->castMove))
                 {
                     checkDone = true;
                     break;
@@ -201,37 +204,40 @@ bool cControl::DoControl(Uint32 t,int scrX,int scrY,bool* TermGame,bool* SelectT
             toMove = toMove->getSuccessor();
         }
         checkNewSpell = false;
-        if(checkDone == false) *doCast = -1;
+        if(checkDone == false) pUnitSelectionInputs->castMove = -1;
     }
     //reset the checking variable
-    if(*doCast == -1) checkNewSpell = true;
+    if(pUnitSelectionInputs->castMove == -1) checkNewSpell = true;
 
     //tell aoe Draw range
     drawAoe = -1;
-    if(selectedNumber[0] > 0 && *doCast != -1)
+    if(selectedNumber[0] > 0 && pUnitSelectionInputs->castMove != -1)
     {
         cSelection* toMove;
         toMove = getFirstPriorizedUnit(0);
-        if(toMove->getContent()->getNumberOfAblilities() > *doCast)
+        sEntitySpecifications* enSpec;
+        enSpec = pGameModel->getEntitySpecifications();
+        if(toMove->getContent()->getNumberOfAblilities() > pUnitSelectionInputs->castMove)
         {
-            if(modifierType[toMove->getContent()->getEnttype(*doCast)][0] >= ENT_PROP_AOE)
+            if(enSpec->modifierType[toMove->getContent()->getEnttype(pUnitSelectionInputs->castMove)][0] >= ENT_PROP_AOE)
             {
-                drawAoe = modifierValue[toMove->getContent()->getEnttype(*doCast)][0];
+                drawAoe = enSpec->modifierValue[toMove->getContent()->getEnttype(pUnitSelectionInputs->castMove)][0];
+                //Error("setting aoe range in COntrol to ", drawAoe);
             }
         }
     }
-
+    pView->setDrawAoe(drawAoe);
     //Do a selection
-    if(*SelectTile == true)
+    if( pUnitSelectionInputs->bSelect)
     {
         //Working variables Rectangle sizes in units of tiles
         int sx,sy,sh,sw;
 
         //determine the position of the rectangle in units of tiles NOTE: first adding sy(sx) and then subtracting after you have it in units of tiles yields the real eidth in tiles
-        sx = SelectRect->x;
-        sy = SelectRect->y;
-        sh = SelectRect->h + sy;
-        sw = SelectRect->w + sx;
+        sx = pUnitSelectionInputs->SelectRect.x;
+        sy = pUnitSelectionInputs->SelectRect.y;
+        sh = pUnitSelectionInputs->SelectRect.h + sy;
+        sw = pUnitSelectionInputs->SelectRect.w + sx;
         sx = (sx - (sx % TILE_WIDTH)) / TILE_WIDTH;
         sy = (sy - (sy % TILE_HEIGHT)) / TILE_HEIGHT;
         sh = (sh - (sh % TILE_HEIGHT)) / TILE_HEIGHT;
@@ -239,40 +245,39 @@ bool cControl::DoControl(Uint32 t,int scrX,int scrY,bool* TermGame,bool* SelectT
         sw = (sw - (sw % TILE_WIDTH)) / TILE_WIDTH;
         sw = sw - sx + 1;
         //remove a bug that cause a collapse when selection to close to the corner
-        if(scrX+sx+sw > WORLD_WIDTH){sw = WORLD_WIDTH-sx-scrX;}
-        if(scrY+sy+sh > WORLD_HEIGHT){sh = WORLD_HEIGHT-sy-scrY;}
+        if(pScrollInputs->screenX+sx+sw > WORLD_WIDTH){sw = WORLD_WIDTH-sx-pScrollInputs->screenX;}
+        if(pScrollInputs->screenY+sy+sh > WORLD_HEIGHT){sh = WORLD_HEIGHT-sy-pScrollInputs->screenY;}
 
-        if(*ShiftDown == false) ClearSelection(0);
+        if(!(pUnitSelectionInputs->onlyAddSelection)) ClearSelection(0);
         //Build a list from all the tiles in the selec
         for(int i=0;i<sw;i++)
         {
             for(int j=0;j<sh;j++)
             {
-                if(*ShiftDown == true) RemoveSelectionByTile(MapObj.getMap(scrX+sx+i,scrY+sy+j),0);
-                AddSelectionByTile(MapObj.getMap(scrX+sx+i,scrY+sy+j),thisUser,0);
+                if(pUnitSelectionInputs->onlyAddSelection) RemoveSelectionByTile(pGameModel->getMap(pScrollInputs->screenX+sx+i,pScrollInputs->screenY+sy+j),0);
+                AddSelectionByTile(pGameModel->getMap(pScrollInputs->screenX+sx+i,pScrollInputs->screenY+sy+j),thisUser,0);
             }
         }
         sortSelection(0);
 
         //Mark selection as done
-        *SelectTile = false;
+        pUnitSelectionInputs->bSelect = false;
     }
-
-    if(*selectSpecificUnit == true)
+    if(pUnitSelectionInputs->selectOnlySpecificUnit)
     {
-        Error("specific selectX", specX);
-        Error("specific selectY", specY);
-        if(MapObj.getMap(specX,specY)->getContainUnit() != NULL)
+        Error("specific selectX",pUnitSelectionInputs->specificUnitX);
+        Error("specific selectY", pUnitSelectionInputs->specificUnitY);
+        if(pGameModel->getMap(pUnitSelectionInputs->specificUnitX,pUnitSelectionInputs->specificUnitY)->getContainUnit() != NULL)
         {
             int sx,sy,sh,sw;
-            int ThisType = MapObj.getMap(specX,specY)->getContainUnit()->getType();
+            int ThisType = pGameModel->getMap(pUnitSelectionInputs->specificUnitX,pUnitSelectionInputs->specificUnitY)->getContainUnit()->getType();
             Error("ThisType",ThisType);
 
             //determine the position of the rectangle in units of tiles NOTE: first adding sy(sx) and then subtracting after you have it in units of tiles yields the real eidth in tiles
-            sx = SpecificUnitRect->x;
-            sy = SpecificUnitRect->y;
-            sh = SpecificUnitRect->h + sy;
-            sw = SpecificUnitRect->w + sx;
+            sx = pUnitSelectionInputs->SelectSpecificRect.x;
+            sy = pUnitSelectionInputs->SelectSpecificRect.y;
+            sh = pUnitSelectionInputs->SelectSpecificRect.h + sy;
+            sw = pUnitSelectionInputs->SelectSpecificRect.w + sx;
             sx = (sx - (sx % TILE_WIDTH)) / TILE_WIDTH;
             sy = (sy - (sy % TILE_HEIGHT)) / TILE_HEIGHT;
             sh = (sh - (sh % TILE_HEIGHT)) / TILE_HEIGHT;
@@ -280,42 +285,41 @@ bool cControl::DoControl(Uint32 t,int scrX,int scrY,bool* TermGame,bool* SelectT
             sw = (sw - (sw % TILE_WIDTH)) / TILE_WIDTH;
             sw = sw - sx + 1;
             //remove a bug that cause a collapse when selection to close to the corner
-            if(scrX+sx+sw > WORLD_WIDTH){sw = WORLD_WIDTH-sx-scrX;}
-            if(scrY+sy+sh > WORLD_HEIGHT){sh = WORLD_HEIGHT-sy-scrY;}
+            if(pScrollInputs->screenX+sx+sw > WORLD_WIDTH){sw = WORLD_WIDTH-sx-pScrollInputs->screenX;}
+            if(pScrollInputs->screenY+sy+sh > WORLD_HEIGHT){sh = WORLD_HEIGHT-sy-pScrollInputs->screenY;}
 
-            if(*ShiftDown == false) ClearSelection(0);
+            if(!(pUnitSelectionInputs->onlyAddSelection)) ClearSelection(0);
             //Build a list from all the tiles in the selec
             for(int i=0;i<sw;i++)
             {
                 for(int j=0;j<sh;j++)
                 {
-                    if(MapObj.getMap(scrX+sx+i,scrY+sy+j)->getContainUnit() != NULL)
+                    if(pGameModel->getMap(pScrollInputs->screenX+sx+i,pScrollInputs->screenY+sy+j)->getContainUnit() != NULL)
                     {
-                        if(MapObj.getMap(scrX+sx+i,scrY+sy+j)->getContainUnit()->getType() == ThisType)
+                        if(pGameModel->getMap(pScrollInputs->screenX+sx+i,pScrollInputs->screenY+sy+j)->getContainUnit()->getType() == ThisType)
                         {
-                            if(*ShiftDown == true) RemoveSelectionByTile(MapObj.getMap(scrX+sx+i,scrY+sy+j),0);
-                            AddSelectionByTile(MapObj.getMap(scrX+sx+i,scrY+sy+j),thisUser,0);
+                            if(pUnitSelectionInputs->onlyAddSelection) RemoveSelectionByTile(pGameModel->getMap(pScrollInputs->screenX+sx+i,pScrollInputs->screenY+sy+j),0);
+                            AddSelectionByTile(pGameModel->getMap(pScrollInputs->screenX+sx+i,pScrollInputs->screenY+sy+j),thisUser,0);
                         }
                     }
                 }
             }
             sortSelection(0);
         }
-        *selectSpecificUnit = false;
+        pUnitSelectionInputs->selectOnlySpecificUnit = false;
     }
-
     //Remove the commands if no unit is selected
-    if(selectedNumber[0] == 0 && (*doAttack == true || *doCast != -1 ))
+    if(selectedNumber[0] == 0 && (pUnitSelectionInputs->attackMove || pUnitSelectionInputs->castMove != -1 ))
     {
-        *doAttack = false;
-        *doCast = -1;
+        pUnitSelectionInputs->attackMove = false;
+        pUnitSelectionInputs->castMove = -1;
     }
 
     //Give Commands TODO multiple possible commands
-    if(*doMove == true && *doCast == -1)
+    if(pUnitSelectionInputs->doMove == true && pUnitSelectionInputs->castMove == -1)
     {
-        if(moveX >= WORLD_WIDTH){moveX = WORLD_WIDTH-1;}
-        if(moveY >= WORLD_HEIGHT){moveY = WORLD_HEIGHT-1;}
+        if(pUnitSelectionInputs->moveCommandX >= WORLD_WIDTH){pUnitSelectionInputs->moveCommandX = WORLD_WIDTH-1;}
+        if(pUnitSelectionInputs->moveCommandY >= WORLD_HEIGHT){pUnitSelectionInputs->moveCommandY = WORLD_HEIGHT-1;}
         cSelection* toMove;
         toMove = pListHead[0]->getSuccessor();
         while(toMove != NULL)
@@ -325,30 +329,30 @@ bool cControl::DoControl(Uint32 t,int scrX,int scrY,bool* TermGame,bool* SelectT
             {
                 if(toMove->getContent()->getOwner() == thisUser)
                 {
-                    if(*doAttack == true)
+                    if(pUnitSelectionInputs->attackMove)
                     {
-                        storeCommand(toMove->getContent(),COMMAND_ATTACK,moveX, moveY,1);
-                        //toMove->getContent()->AttackCommand(MapObj.getMap(moveX,moveY),1);
+                        storeCommand(toMove->getContent(),COMMAND_ATTACK,pUnitSelectionInputs->moveCommandX,pUnitSelectionInputs->moveCommandY,1);
+                        //toMove->getContent()->AttackCommand(pGameModel->getMap(moveX,moveY),1);
                     }
                     else
                     {
-                        storeCommand(toMove->getContent(),COMMAND_MOVE,moveX, moveY,1);
-                        //toMove->getContent()->MovementCommand(MapObj.getMap(moveX,moveY),1);
+                        storeCommand(toMove->getContent(),COMMAND_MOVE,pUnitSelectionInputs->moveCommandX, pUnitSelectionInputs->moveCommandY,1);
+                        //toMove->getContent()->MovementCommand(pGameModel->getMap(moveX,moveY),1);
                     }
                 }
             }
             toMove = toMove->getSuccessor();
         }
-        *doMove = false;
-        *doAttack = false;
+        pUnitSelectionInputs->doMove = false;
+        pUnitSelectionInputs->attackMove = false;
     }
 
     //apply an actual cast command;
-    if(*doMove == true && *doCast != -1 && *doAttack == false)
+    if(pUnitSelectionInputs->doMove && pUnitSelectionInputs->castMove != -1 && pUnitSelectionInputs->attackMove == false)
     {
         Error("Checking for closest unit");
-        if(moveX >= WORLD_WIDTH){moveX = WORLD_WIDTH-1;}
-        if(moveY >= WORLD_HEIGHT){moveY = WORLD_HEIGHT-1;}
+        if(pUnitSelectionInputs->moveCommandX >= WORLD_WIDTH){pUnitSelectionInputs->moveCommandX = WORLD_WIDTH-1;}
+        if(pUnitSelectionInputs->moveCommandY >= WORLD_HEIGHT){pUnitSelectionInputs->moveCommandY = WORLD_HEIGHT-1;}
         float minimalDistance = 1000;
         float sample;
         int ThisType;
@@ -365,9 +369,9 @@ bool cControl::DoControl(Uint32 t,int scrX,int scrY,bool* TermGame,bool* SelectT
                 if(candidate->getContent()->getType() == ThisType)
                 {
                     //This function checks if the cast is ready
-                    if(checkCastable(candidate->getContent(),*doCast))
+                    if(checkCastable(candidate->getContent(),pUnitSelectionInputs->castMove))
                     {
-                        sample = realDist(moveX,moveY,candidate->getContent()->getPosition()->getX()
+                        sample = realDist(pUnitSelectionInputs->moveCommandX,pUnitSelectionInputs->moveCommandY,candidate->getContent()->getPosition()->getX()
                                           ,candidate->getContent()->getPosition()->getY());
                         if(sample < minimalDistance)
                         {
@@ -383,35 +387,35 @@ bool cControl::DoControl(Uint32 t,int scrX,int scrY,bool* TermGame,bool* SelectT
         }
         if(toMove != NULL)
         {
-            Error("storing castcommand to ",moveX);
-            Error("storing castcommand to ",moveY);
-            if(*doCast == 0)
+            Error("storing castcommand to ",pUnitSelectionInputs->moveCommandX);
+            Error("storing castcommand to ",pUnitSelectionInputs->moveCommandY);
+            if(pUnitSelectionInputs->castMove == 0)
             {
-                storeCommand(toMove->getContent(),COMMAND_CAST_0,moveX, moveY,1);
-                *doCast = -1;
+                storeCommand(toMove->getContent(),COMMAND_CAST_0,pUnitSelectionInputs->moveCommandX, pUnitSelectionInputs->moveCommandY,1);
+                pUnitSelectionInputs->castMove = -1;
             }
-            if(*doCast == 1)
+            if(pUnitSelectionInputs->castMove == 1)
             {
-                storeCommand(toMove->getContent(),COMMAND_CAST_1,moveX, moveY,1);
-                *doCast = -1;
+                storeCommand(toMove->getContent(),COMMAND_CAST_1,pUnitSelectionInputs->moveCommandX, pUnitSelectionInputs->moveCommandY,1);
+                pUnitSelectionInputs->castMove = -1;
             }
-            if(*doCast == 2)
+            if(pUnitSelectionInputs->castMove == 2)
             {
-                storeCommand(toMove->getContent(),COMMAND_CAST_2,moveX, moveY,1);
-                *doCast = -1;
+                storeCommand(toMove->getContent(),COMMAND_CAST_2,pUnitSelectionInputs->moveCommandX, pUnitSelectionInputs->moveCommandY,1);
+                pUnitSelectionInputs->castMove = -1;
             }
-            if(*doCast == 3)
+            if(pUnitSelectionInputs->castMove == 3)
             {
-                storeCommand(toMove->getContent(),COMMAND_CAST_3,moveX, moveY,1);
-                *doCast = -1;
+                storeCommand(toMove->getContent(),COMMAND_CAST_3,pUnitSelectionInputs->moveCommandX, pUnitSelectionInputs->moveCommandY,1);
+                pUnitSelectionInputs->castMove = -1;
             }
         }
-        *doMove = false;
-        *doCast = -1;
+        pUnitSelectionInputs->doMove = false;
+        pUnitSelectionInputs->castMove = -1;
     }
 
     //give all selected Units a Stop Command
-    if(*doStop == true)
+    if(pUnitSelectionInputs->stopMove == true)
     {
         cSelection* toMove;
         toMove = pListHead[0]->getSuccessor();
@@ -429,53 +433,56 @@ bool cControl::DoControl(Uint32 t,int scrX,int scrY,bool* TermGame,bool* SelectT
             Error("tack");
             toMove = toMove->getSuccessor();
         }
-        *doStop = false;
+        pUnitSelectionInputs->stopMove = false;
     }
 
     //Group Settings
-    if(*getGroup == true)
+    if(pUnitSelectionInputs->GetGroup)
     {
-        if(*ShiftDown == false)
+        if(!pUnitSelectionInputs->onlyAddSelection)
         {
-            copySelection(GroupNumber,0);
+            copySelection(pUnitSelectionInputs->GroupNumber,0);
         }
         else
         {
-            AddSelectionFromGroup(GroupNumber,0);
+            AddSelectionFromGroup(pUnitSelectionInputs->GroupNumber,0);
             Error("Added selection from Group");
             sortSelection(0);
         }
-        *getGroup = false;
+        pUnitSelectionInputs->GetGroup = false;
     }
-    if(*setGroup == true)
+
+    if(pUnitSelectionInputs->SetGroup)
     {
-        if(*ShiftDown == false)
+        if(pUnitSelectionInputs->onlyAddSelection == false)
         {
-            copySelection(0,GroupNumber);
+            copySelection(0,pUnitSelectionInputs->GroupNumber);
         }
         else
         {
-            AddSelectionFromGroup(0,GroupNumber);
+            AddSelectionFromGroup(0,pUnitSelectionInputs->GroupNumber);
             Error("Added selection to Group");
-            sortSelection(GroupNumber);
+            sortSelection(pUnitSelectionInputs->GroupNumber);
         }
-        *setGroup = false;
+        pUnitSelectionInputs->SetGroup = false;
     }
-    if(*jumpGroup == true)
+
+    if(pUnitSelectionInputs->JumpGroup)
     {
-        if(selectedNumber[GroupNumber] > 0) screenJumpRelativeX = CenterMassX(GroupNumber) - SCR_TILE_WIDTH/2 - scrX;
-        if(selectedNumber[GroupNumber] > 0) screenJumpRelativeY = CenterMassY(GroupNumber) - SCR_TILE_HEIGHT/2 -scrY;
-        *jumpGroup = false;
+        if(selectedNumber[pUnitSelectionInputs->GroupNumber] > 0) pScrollInputs->screenJumpRelativeX = CenterMassX(pUnitSelectionInputs->GroupNumber) - SCR_TILE_WIDTH/2 - pScrollInputs->screenX;
+        if(selectedNumber[pUnitSelectionInputs->GroupNumber] > 0) pScrollInputs->screenJumpRelativeY = CenterMassY(pUnitSelectionInputs->GroupNumber) - SCR_TILE_HEIGHT/2 -pScrollInputs->screenY;
+        pUnitSelectionInputs->JumpGroup = false;
     }
-    if(*SelectMiniPic == true)
+
+    if(pUnitSelectionInputs->selMiniPic == true)
     {
-        Error("selecting MiniPic Number ",PicNumber);
-        if(selectedNumber[0] >= PicNumber)
+        Error("selecting MiniPic Number ",pUnitSelectionInputs->selMiniPicNumber);
+        if(selectedNumber[0] >= pUnitSelectionInputs->selMiniPicNumber)
         {
             cSelection* sel;
             cUnit* Uni;
             sel = pListHead[0];
-            for(int i=0;i< PicNumber;i++)
+            for(int i=0;i< pUnitSelectionInputs->selMiniPicNumber;i++)
             {
                 Error("jumping through selection",i);
                 sel=sel->getSuccessor();
@@ -485,11 +492,12 @@ bool cControl::DoControl(Uint32 t,int scrX,int scrY,bool* TermGame,bool* SelectT
             AddSelection(Uni,NULL,0);
         }
         else{ClearSelection(0);}
-        *SelectMiniPic = false;
+        pUnitSelectionInputs->selMiniPic = false;
     }
-    if(*activateCommand >= 0)
+
+    if(pUnitSelectionInputs->changeAbility >= 0)
     {
-        Error("activate Command",*activateCommand);
+        Error("activate Command",pUnitSelectionInputs->changeAbility);
         cSelection* toMove;
         int ThisType;
         toMove = NULL;
@@ -504,16 +512,18 @@ bool cControl::DoControl(Uint32 t,int scrX,int scrY,bool* TermGame,bool* SelectT
             {
                 if(toMove->getContent()->getOwner() == thisUser && toMove->getContent()->getType() == ThisType)
                 {
-                    Error("store activate Command",*activateCommand);
-                    storeCommand(toMove->getContent(),COMMAND_ACTIVATE_ABILITY,0,0,*activateCommand);
+                    Error("store activate Command",pUnitSelectionInputs->changeAbility);
+                    storeCommand(toMove->getContent(),COMMAND_ACTIVATE_ABILITY,0,0,pUnitSelectionInputs->changeAbility);
                     //toMove->getContent()->StopCommand();
                 }
             }
             Error("tack");
             toMove = toMove->getSuccessor();
         }
-        *activateCommand = -1;
+        pUnitSelectionInputs->changeAbility = -1;
     }
+
+    pView->setSelection(pListHead[0],selectedNumber[0],selectedBuildings[0],selectedTypes[0],priorizedNumber[0]);
 
     ///TODO adapt to Changelist
     //Move all objects TODO here animations of the world attacks and so on, as each tile is checked
@@ -522,7 +532,7 @@ bool cControl::DoControl(Uint32 t,int scrX,int scrY,bool* TermGame,bool* SelectT
 	    for(int j=0;j< WORLD_WIDTH;j++)
 	    {
 	        cUnit* Unit;
-            Unit = MapObj.getMap(j,i)->getContainUnit();
+            Unit = pGameModel->getMap(j,i)->getContainUnit();
             if(Unit!=NULL)
             {
                 //Animate
@@ -535,7 +545,7 @@ bool cControl::DoControl(Uint32 t,int scrX,int scrY,bool* TermGame,bool* SelectT
                     if(Unit->checkAlive()==false)
                     {
                         Unit->removeUnit(&changeListObj);
-                        DestoryUnit(Unit);
+                        DestroyUnit(Unit);
                     }
                     int entTyp;
                     for(int k=0;k<Unit->getNumberOfAblilities();k++)
@@ -543,7 +553,7 @@ bool cControl::DoControl(Uint32 t,int scrX,int scrY,bool* TermGame,bool* SelectT
                         if((entTyp = Unit->checkEntity(k)) >= 0)
                         {
                             Error("preparing create Entity");
-                            createEntity(entTyp,Unit->getPosition()->getX(),Unit->getPosition()->getY(),Unit->getGoal(),Unit->getUnitGoal());
+                            pGameModel->createEntity(entTyp,Unit->getPosition()->getX(),Unit->getPosition()->getY(),Unit->getGoal(),Unit->getUnitGoal());
                         }
                     }
                 }
@@ -554,22 +564,22 @@ bool cControl::DoControl(Uint32 t,int scrX,int scrY,bool* TermGame,bool* SelectT
             }
 	    }
 	}
-	for(int i=0;i< NumberOfEntities; i++)
+	for(int i=0;i< pGameModel->getNumberOfEntities(); i++)
 	{
-	    if(EntityList[i]->checkActive() == false)
+	    if(pGameModel->getEntity(i)->checkActive() == false)
 	    {
-            removeEntity(i);
+            pGameModel->removeEntity(i);
 	    }
         else
         {
-            EntityList[i]->Animate(t);
+            pGameModel->getEntity(i)->Animate(t);
             if(CONTROL_SETTINGS == MODE_SERVER || CONTROL_SETTINGS == MODE_SINGPLAY)
             {
-                EntityList[i]->Move(t,&changeListObj);
+                pGameModel->getEntity(i)->Move(t,&changeListObj);
             }
             else
             {
-                EntityList[i]->MoveClient(t,&changeListObj);
+                pGameModel->getEntity(i)->MoveClient(t,&changeListObj);
             }
         }
 	}
@@ -658,24 +668,24 @@ void cControl::applyChanges()
         {
             case CHANGE_NEW :
             {
-                CreateUnit(giveNext->UnitID,giveNext->goalUnitID,giveNext->posiX,giveNext->posiY,giveNext->goalX);
+                pGameModel->CreateUnit(giveNext->UnitID,giveNext->goalUnitID,giveNext->posiX,giveNext->posiY,giveNext->goalX);
                 break;
             }
             case CHANGE_REMOVE :
             {
                 cUnit* Unit;
                 Unit = giveNext->CommandedUnit;
-                DestoryUnit(Unit);
+                DestroyUnit(Unit);
                 break;
             }
             case CHANGE_POSITION :
             {
-                giveNext->CommandedUnit->applyPositionChange(MapObj.getMap(giveNext->goalX,giveNext->goalY),&changeListObj);
+                giveNext->CommandedUnit->applyPositionChange(pGameModel->getMap(giveNext->goalX,giveNext->goalY),&changeListObj);
                 break;
             }
             case CHANGE_GOAL :
             {
-                giveNext->CommandedUnit->setGoal(MapObj.getMap(giveNext->goalX,giveNext->goalY));
+                giveNext->CommandedUnit->setGoal(pGameModel->getMap(giveNext->goalX,giveNext->goalY));
                 break;
             }
             case CHANGE_UNITGOAL :
@@ -688,7 +698,7 @@ void cControl::applyChanges()
                 }
                 else
                 {
-                    giveNext->CommandedUnit->setUnitGoal(MapObj.getMap(giveNext->goalX,giveNext->goalY)->getContainUnit());
+                    giveNext->CommandedUnit->setUnitGoal(pGameModel->getMap(giveNext->goalX,giveNext->goalY)->getContainUnit());
                 }
                 break;
                 Error("done");
@@ -707,16 +717,16 @@ void cControl::applyChanges()
             case CHANGE_CREATE_ENT :
             {
                 Error("Create Entity Control");
-                if(MapObj.getMap(giveNext->goalX,giveNext->goalY)->getContainUnit() != NULL)
+                if(pGameModel->getMap(giveNext->goalX,giveNext->goalY)->getContainUnit() != NULL)
                 {
-                    createEntity(giveNext->CommandedUnit->getEnttype(giveNext->moveType),giveNext->posiX,giveNext->posiY
-                                ,MapObj.getMap(giveNext->goalX,giveNext->goalY)
-                                ,MapObj.getMap(giveNext->goalX,giveNext->goalY)->getContainUnit());
+                    pGameModel->createEntity(giveNext->CommandedUnit->getEnttype(giveNext->moveType),giveNext->posiX,giveNext->posiY
+                                ,pGameModel->getMap(giveNext->goalX,giveNext->goalY)
+                                ,pGameModel->getMap(giveNext->goalX,giveNext->goalY)->getContainUnit());
                 }
                 else
                 {
-                    createEntity(giveNext->CommandedUnit->getEnttype(giveNext->moveType),giveNext->posiX,giveNext->posiY
-                             ,MapObj.getMap(giveNext->goalX,giveNext->goalY),NULL);
+                    pGameModel->createEntity(giveNext->CommandedUnit->getEnttype(giveNext->moveType),giveNext->posiX,giveNext->posiY
+                             ,pGameModel->getMap(giveNext->goalX,giveNext->goalY),NULL);
                 }
                 break;
             }
@@ -764,12 +774,12 @@ void cControl::giveCommands()
             {
                 Error("trying to spawn");
                 //DO A SEND OF WHAT HE DID
-                ID = checkFreeUnitID();
+                ID = pGameModel->checkFreeUnitID();
                 Error("ID",ID);
                 if(ID != -1)
                 {
                     Change* newChange;
-                    CreateUnit(ID,giveNext->UnitID,giveNext->posiX,giveNext->posiY,giveNext->goalX);
+                    pGameModel->CreateUnit(ID,giveNext->UnitID,giveNext->posiX,giveNext->posiY,giveNext->goalX);
                     newChange = new Change;
                     newChange->UnitID = ID;
                     newChange->posiX = giveNext->posiX;
@@ -803,21 +813,23 @@ void cControl::giveCommands()
             }
             case COMMAND_MOVE:
             {
-                giveNext->CommandedUnit->MovementCommand(MapObj.getMap(giveNext->goalX,giveNext->goalY),giveNext->priority);
+                giveNext->CommandedUnit->MovementCommand(pGameModel->getMap(giveNext->goalX,giveNext->goalY),giveNext->priority);
                 break;
             }
             case COMMAND_ATTACK:
             {
-                giveNext->CommandedUnit->AttackCommand(MapObj.getMap(giveNext->goalX,giveNext->goalY),giveNext->priority);
+                giveNext->CommandedUnit->AttackCommand(pGameModel->getMap(giveNext->goalX,giveNext->goalY),giveNext->priority);
                 break;
             }
             case COMMAND_ACTIVATE_ABILITY:
             {
-                if(UnitEntityType[giveNext->CommandedUnit->getType()][giveNext->priority] >= 0 &&
-                   UnitEntityType[giveNext->CommandedUnit->getType()][giveNext->priority] < ENTITY_TYPE_MAX )
+                sUnitSpecifications* pUnitSpecifications = pGameModel->getUnitSpecifications();
+                sEntitySpecifications* pEntitySpecifications = pGameModel->getEntitySpecifications();
+                if(pUnitSpecifications->UnitEntityType[giveNext->CommandedUnit->getType()][giveNext->priority] >= 0 &&
+                   pUnitSpecifications->UnitEntityType[giveNext->CommandedUnit->getType()][giveNext->priority] < ENTITY_TYPE_MAX )
                    {
-                       if(modifierType[UnitEntityType[giveNext->CommandedUnit->getType()][giveNext->priority]][0] >= ENT_PROP_GROUND) Ground = true;
-                       if(modifierType[UnitEntityType[giveNext->CommandedUnit->getType()][giveNext->priority]][0] >= ENT_PROP_SELF) {Ground = false;Self=true;}
+                       if(pEntitySpecifications->modifierType[pUnitSpecifications->UnitEntityType[giveNext->CommandedUnit->getType()][giveNext->priority]][0] >= ENT_PROP_GROUND) Ground = true;
+                       if(pEntitySpecifications->modifierType[pUnitSpecifications->UnitEntityType[giveNext->CommandedUnit->getType()][giveNext->priority]][0] >= ENT_PROP_SELF) {Ground = false;Self=true;}
                    }
 
                 giveNext->CommandedUnit->ChangeAbilityTypeCommand(giveNext->priority,Ground,Self,&changeListObj);
@@ -825,31 +837,39 @@ void cControl::giveCommands()
             }
             case COMMAND_CAST_0:
             {
-                if(modifierType[UnitEntityType[giveNext->CommandedUnit->getType()][0]][0] >= ENT_PROP_GROUND) Ground = true;
-                if(modifierType[UnitEntityType[giveNext->CommandedUnit->getType()][giveNext->priority]][0] >= ENT_PROP_SELF) {Ground = false;Self=true;}
-                giveNext->CommandedUnit->CastCommand(0,MapObj.getMap(giveNext->goalX,giveNext->goalY),Ground,Self,giveNext->priority);
+                sUnitSpecifications* pUnitSpecifications = pGameModel->getUnitSpecifications();
+                sEntitySpecifications* pEntitySpecifications = pGameModel->getEntitySpecifications();
+                if(pEntitySpecifications->modifierType[pUnitSpecifications->UnitEntityType[giveNext->CommandedUnit->getType()][0]][0] >= ENT_PROP_GROUND) Ground = true;
+                if(pEntitySpecifications->modifierType[pUnitSpecifications->UnitEntityType[giveNext->CommandedUnit->getType()][giveNext->priority]][0] >= ENT_PROP_SELF) {Ground = false;Self=true;}
+                giveNext->CommandedUnit->CastCommand(0,pGameModel->getMap(giveNext->goalX,giveNext->goalY),Ground,Self,giveNext->priority);
                 break;
             }
             case COMMAND_CAST_1:
             {
-                if(modifierType[UnitEntityType[giveNext->CommandedUnit->getType()][1]][0] >= ENT_PROP_GROUND) Ground = true;
-                if(modifierType[UnitEntityType[giveNext->CommandedUnit->getType()][giveNext->priority]][0] >= ENT_PROP_SELF) {Ground = false;Self=true;}
+                sUnitSpecifications* pUnitSpecifications = pGameModel->getUnitSpecifications();
+                sEntitySpecifications* pEntitySpecifications = pGameModel->getEntitySpecifications();
+                if(pEntitySpecifications->modifierType[pUnitSpecifications->UnitEntityType[giveNext->CommandedUnit->getType()][1]][0] >= ENT_PROP_GROUND) Ground = true;
+                if(pEntitySpecifications->modifierType[pUnitSpecifications->UnitEntityType[giveNext->CommandedUnit->getType()][giveNext->priority]][0] >= ENT_PROP_SELF) {Ground = false;Self=true;}
                 Error("giving cast command 1");
-                giveNext->CommandedUnit->CastCommand(1,MapObj.getMap(giveNext->goalX,giveNext->goalY),Ground,Self,giveNext->priority);
+                giveNext->CommandedUnit->CastCommand(1,pGameModel->getMap(giveNext->goalX,giveNext->goalY),Ground,Self,giveNext->priority);
                 break;
             }
             case COMMAND_CAST_2:
             {
-                if(modifierType[UnitEntityType[giveNext->CommandedUnit->getType()][2]][0] >= ENT_PROP_GROUND) Ground = true;
-                if(modifierType[UnitEntityType[giveNext->CommandedUnit->getType()][giveNext->priority]][0] >= ENT_PROP_SELF) {Ground = false;Self=true;}
-                giveNext->CommandedUnit->CastCommand(2,MapObj.getMap(giveNext->goalX,giveNext->goalY),Ground,Self,giveNext->priority);
+                sUnitSpecifications* pUnitSpecifications = pGameModel->getUnitSpecifications();
+                sEntitySpecifications* pEntitySpecifications = pGameModel->getEntitySpecifications();
+                if(pEntitySpecifications->modifierType[pUnitSpecifications->UnitEntityType[giveNext->CommandedUnit->getType()][2]][0] >= ENT_PROP_GROUND) Ground = true;
+                if(pEntitySpecifications->modifierType[pUnitSpecifications->UnitEntityType[giveNext->CommandedUnit->getType()][giveNext->priority]][0] >= ENT_PROP_SELF) {Ground = false;Self=true;}
+                giveNext->CommandedUnit->CastCommand(2,pGameModel->getMap(giveNext->goalX,giveNext->goalY),Ground,Self,giveNext->priority);
                 break;
             }
             case COMMAND_CAST_3:
             {
-                if(modifierType[UnitEntityType[giveNext->CommandedUnit->getType()][3]][0] >= ENT_PROP_GROUND) Ground = true;
-                if(modifierType[UnitEntityType[giveNext->CommandedUnit->getType()][giveNext->priority]][0] >= ENT_PROP_SELF) {Ground = false;Self=true;}
-                giveNext->CommandedUnit->CastCommand(3,MapObj.getMap(giveNext->goalX,giveNext->goalY),Ground,Self,giveNext->priority);
+                sUnitSpecifications* pUnitSpecifications = pGameModel->getUnitSpecifications();
+                sEntitySpecifications* pEntitySpecifications = pGameModel->getEntitySpecifications();
+                if(pEntitySpecifications->modifierType[pUnitSpecifications->UnitEntityType[giveNext->CommandedUnit->getType()][3]][0] >= ENT_PROP_GROUND) Ground = true;
+                if(pEntitySpecifications->modifierType[pUnitSpecifications->UnitEntityType[giveNext->CommandedUnit->getType()][giveNext->priority]][0] >= ENT_PROP_SELF) {Ground = false;Self=true;}
+                giveNext->CommandedUnit->CastCommand(3,pGameModel->getMap(giveNext->goalX,giveNext->goalY),Ground,Self,giveNext->priority);
                 break;
             }
         }
@@ -858,20 +878,7 @@ void cControl::giveCommands()
     }
 }
 
-void cControl::DestoryUnit(cUnit* Unit)
-{
-    Error("killing unit");
-    Unit->getPosition()->setContain(NULL,NULL);
-    if(Unit->getOwner() == thisUser)
-    {
-        for(int i=0;i<=10;i++)
-        {
-            RemoveSelection(Unit,NULL,i);
-        }
-    }
-    IDListed[Unit->getID()] = NULL;
-    delete Unit;
-}
+
 
 void cControl::PackCommandList()
 {
@@ -1154,20 +1161,20 @@ void cControl::StripReceivedListServer()
         if(newCommand->commandType < 100)
         {
             //Check if the Unit with the corresponding ID has these coordinates
-            if(MapObj.getMap(newCommand->posiX,newCommand->posiY)->getContainUnit() != NULL)
+            if(pGameModel->getMap(newCommand->posiX,newCommand->posiY)->getContainUnit() != NULL)
             {
-                if((MapObj.getMap(newCommand->posiX,newCommand->posiY)->getContainUnit()->getID()) == newCommand->UnitID)
+                if((pGameModel->getMap(newCommand->posiX,newCommand->posiY)->getContainUnit()->getID()) == newCommand->UnitID)
                 {
-                        newCommand->CommandedUnit = MapObj.getMap(newCommand->posiX,newCommand->posiY)->getContainUnit();
+                        newCommand->CommandedUnit = pGameModel->getMap(newCommand->posiX,newCommand->posiY)->getContainUnit();
                 }
                 else
                 {
-                    newCommand->CommandedUnit = getUnitByID(newCommand->UnitID);
+                    newCommand->CommandedUnit = pGameModel->getUnitByID(newCommand->UnitID);
                 }
             }
             else
             {
-                newCommand->CommandedUnit = getUnitByID(newCommand->UnitID);
+                newCommand->CommandedUnit = pGameModel->getUnitByID(newCommand->UnitID);
             }
 
             //Add the Command to the Commandlist
@@ -1288,20 +1295,20 @@ void cControl::StripReceivedListClient()
         }
 
         //Check if the Unit with the corresponding ID has these coordinates
-        if(MapObj.getMap(newChange->posiX,newChange->posiY)->getContainUnit() != NULL && newChange->changeType != CHANGE_NEW)
+        if(pGameModel->getMap(newChange->posiX,newChange->posiY)->getContainUnit() != NULL && newChange->changeType != CHANGE_NEW)
         {
-            if((MapObj.getMap(newChange->posiX,newChange->posiY)->getContainUnit()->getID()) == newChange->UnitID)
+            if((pGameModel->getMap(newChange->posiX,newChange->posiY)->getContainUnit()->getID()) == newChange->UnitID)
             {
-                    newChange->CommandedUnit = MapObj.getMap(newChange->posiX,newChange->posiY)->getContainUnit();
+                    newChange->CommandedUnit = pGameModel->getMap(newChange->posiX,newChange->posiY)->getContainUnit();
             }
             else
             {
-                newChange->CommandedUnit = getUnitByID(newChange->UnitID);
+                newChange->CommandedUnit = pGameModel->getUnitByID(newChange->UnitID);
             }
         }
         else
         {
-            newChange->CommandedUnit = getUnitByID(newChange->UnitID);
+            newChange->CommandedUnit = pGameModel->getUnitByID(newChange->UnitID);
         }
 
         changeListObj.Add(newChange);
@@ -1343,29 +1350,51 @@ void cControl::readReplay()
     while(newChange != NULL)
     {
         //Check if the Unit with the corresponding ID has these coordinates
-        if(MapObj.getMap(newChange->posiX,newChange->posiY)->getContainUnit() != NULL && newChange->changeType != CHANGE_NEW)
+        if(pGameModel->getMap(newChange->posiX,newChange->posiY)->getContainUnit() != NULL && newChange->changeType != CHANGE_NEW)
         {
-            if((MapObj.getMap(newChange->posiX,newChange->posiY)->getContainUnit()->getID()) == newChange->UnitID)
+            if((pGameModel->getMap(newChange->posiX,newChange->posiY)->getContainUnit()->getID()) == newChange->UnitID)
             {
-                    newChange->CommandedUnit = MapObj.getMap(newChange->posiX,newChange->posiY)->getContainUnit();
+                    newChange->CommandedUnit = pGameModel->getMap(newChange->posiX,newChange->posiY)->getContainUnit();
             }
             else
             {
-                newChange->CommandedUnit = getUnitByID(newChange->UnitID);
+                newChange->CommandedUnit = pGameModel->getUnitByID(newChange->UnitID);
             }
         }
         else
         {
-            newChange->CommandedUnit = getUnitByID(newChange->UnitID);
+            newChange->CommandedUnit = pGameModel->getUnitByID(newChange->UnitID);
         }
         changeListObj.Add(newChange);
         newChange = ReplayObj.readChange(TimeSinceStart);
     }
 }
 
+void cControl::DestroyUnit(cUnit* Unit)
+{
+    pGameModel->DestroyUnit(Unit);
+    if(Unit->getOwner() == thisUser)
+    {
+        for(int i=0;i<=10;i++)
+        {
+            RemoveSelection(Unit,NULL,i);
+        }
+    }
+}
+
 int cControl::getUser()
 {
+    return thisUser;
+}
 
+bool cControl::checkRunning()
+{
+    return bRun;
+}
+
+void cControl::setRun(bool run)
+{
+    bRun = run;
 }
 
 bool cControl::CleanUpControl()

@@ -20,15 +20,22 @@ cOutput::cOutput()
         }
     }
 
-    pMapObj = NULL;
+    pGameModel = NULL;
+    activeScreen = SCREEN_BATTLE_GAME;
 }
 
-bool cOutput::InitVideo(cGameModel* pMod, int own)
+bool cOutput::InitVideo(cGameModel* pMod, sBattleGameModel* BaMo, int own
+                        , sMousePosition* moupo, sScrollInputs* scrollolol, sBattleGameInputs* Bagainp, sUnitSelectionInputs* UselInp)
 {
     //TODO
     thisOwner = own;
     //document
     Error("Initializing output");
+
+    pMousePosition = moupo;
+    pScrollInputs = scrollolol;
+    pBattleGameInputs = Bagainp;
+    pUnitSelectionInputs = UselInp;
 
     healthBarSettings = HEALTHBARS_ALWAYS;
 
@@ -267,6 +274,7 @@ bool cOutput::InitVideo(cGameModel* pMod, int own)
 
     //Initialize the pointer on the map
     pGameModel = pMod;
+    pBattleGameModel = BaMo;
 
     if((HudGraphic = cSurface::Load(HudGraphicFile)) == NULL) {Error("Fehler beim Laden der HUD Graphic");return false;}
     if((selectionFrame = cSurface::Load(selectionFrameFile)) == NULL) {Error("Fehler beim Laden der selectionFrame");return false;}
@@ -358,19 +366,38 @@ bool cOutput::InitVideo(cGameModel* pMod, int own)
     GridAnimStepNow = 0;
     GridAnimTime = GRID_ANIMATION_TICKLENGTH;
 
+    activeScreen = SCREEN_BATTLE_GAME;
 
 	return 1;
 }
-
 bool cOutput::drawFrame(Uint32 ticks)
+{
+    switch(activeScreen)
+    {
+        case SCREEN_BATTLE_GAME:
+        {
+            drawFrameBattleGameScreen(ticks);
+            break;
+        }
+        case SCREEN_MAP_UNIT:
+        {
+            drawFrameUnitSelection(ticks);
+            break;
+        }
+    }
+    return 1;
+}
+
+
+void cOutput::drawFrameUnitSelection(Uint32 ticks)
 {
     drawMap();
     drawEntities();
-    if(*bDrawSelectionRect==true){ drawSelectionRectangle(SelectionRect); }
+    if(pUnitSelectionInputs->doDrawRect){ drawSelectionRectangle(&(pUnitSelectionInputs->DrawRect)); }
 
     if(selectedNumber > 0)
     {
-        drawUnitHud();
+        drawUnitHud(ticks);
     }
     else if(selectedBuildings > 0)
     {
@@ -380,15 +407,13 @@ bool cOutput::drawFrame(Uint32 ticks)
 
     if(drawAoe != -1)
     {
-        applyDrawAoe((mouseX)/TILE_WIDTH,(mouseY)/TILE_HEIGHT,drawAoe);
+        applyDrawAoe((pMousePosition->X)/TILE_WIDTH,(pMousePosition->Y)/TILE_HEIGHT,drawAoe);
     }
     // Draw the cursor
-    cSurface::Draw(mScreen,cursorGraphic[cursorType],mouseX+CURSOR_OFFSET_X,mouseY+CURSOR_OFFSET_Y);
+    cSurface::Draw(mScreen,cursorGraphic[pUnitSelectionInputs->cursorType],pMousePosition->X+CURSOR_OFFSET_X,pMousePosition->Y+CURSOR_OFFSET_Y);
 
     //Show the new screen
     SDL_Flip(mScreen);
-
-    return 1;
 }
 
 void cOutput::drawUnitHud(Uint32 ticks)
@@ -401,9 +426,9 @@ void cOutput::drawUnitHud(Uint32 ticks)
 
 void cOutput::drawUnitPictureAndDescription(Uint32 ticks)
 {
-    if(selListHead->getSuccessor() != NULL)
+    if(selectionListHead->getSuccessor() != NULL)
     {
-        cSelection* sel = selListHead->getSuccessor();
+        cSelection* sel = selectionListHead->getSuccessor();
         //get the first priorized unit
         int typecycle = 0;
         int oldtype = -1;
@@ -439,7 +464,7 @@ void cOutput::InitMinimap()
     {
         for(int j=0;j < WORLD_HEIGHT;j++)
         {
-            position = pMapObj->getMap(i,j);
+            position = pGameModel->getMap(i,j);
             //read the tiletype at this location
             tileType = position->Gettype();
             containType = position->getContainType();
@@ -490,7 +515,7 @@ void cOutput::drawBackgroundAndMinimap()
         for(int j=0;j < WORLD_HEIGHT;j++)
         {
             sightMask[i][j]=-2;
-            position = pMapObj->getMap(i,j);
+            position = pGameModel->getMap(i,j);
             //read the tiletype at this location
             tileType = position->Gettype();
             containType = position->getContainType();
@@ -535,12 +560,12 @@ void cOutput::drawBackgroundAndMinimap()
             cSurface::Draw(mScreen,Minmap,MINIMAP_X + MINIMAP_TILE_WIDTH*i,MINIMAP_Y + MINIMAP_TILE_HEIGHT*j);
 
             //if on the screen draw a tile there
-            if(i>=screenX && i < screenX+SCR_TILE_WIDTH && j>=screenY && j<screenY+SCR_TILE_HEIGHT )
+            if(i>=pScrollInputs->screenX && i < pScrollInputs->screenX+SCR_TILE_WIDTH && j>=pScrollInputs->screenY && j<pScrollInputs->screenY+SCR_TILE_HEIGHT )
             {
                 //Graphic of the corresponding field
                 Tile = TileGraphics[tileType];
                 //Draw it at the right spot
-                cSurface::Draw(mScreen,Tile,(i-screenX)*TILE_WIDTH,(j-screenY)*TILE_HEIGHT);
+                cSurface::Draw(mScreen,Tile,(i-pScrollInputs->screenX)*TILE_WIDTH,(j-pScrollInputs->screenY)*TILE_HEIGHT);
             }
 
         }
@@ -559,12 +584,12 @@ void cOutput::drawUnitsToMinimap()
         {
             if(sightMask[i][j] >= -1)
             {
-                switch(pMapObj->getMap(i,j)->getContainType())
+                switch(pGameModel->getMap(i,j)->getContainType())
                 {
                     case OBJ_TYPE_UNIT:
                     {
                         //read the Unit
-                        Unit = pMapObj->getMap(i,j)->getContainUnit();
+                        Unit = pGameModel->getMap(i,j)->getContainUnit();
                         //read the obj and actiontype
                         unitowner  = Unit->getOwner();
                         Minmap = UnitMinimapGraphic[unitowner];
@@ -586,11 +611,11 @@ void cOutput::drawObjectsToScreen()
     int offsetX,offsetY,drawToX,drawToY,takeX,takeY,normPosX,normPosY;
 
     //Draw Objects
-    for(int i=screenX;i < screenX+SCR_TILE_WIDTH;i++)
+    for(int i=pScrollInputs->screenX;i < pScrollInputs->screenX+SCR_TILE_WIDTH;i++)
     {
-        for(int j=screenY;j < screenY+SCR_TILE_HEIGHT;j++)
+        for(int j=pScrollInputs->screenY;j < pScrollInputs->screenY+SCR_TILE_HEIGHT;j++)
         {
-            switch(pMapObj->getMap(i,j)->getContainType())
+            switch(pGameModel->getMap(i,j)->getContainType())
             {
                 //empty
                 case 0:
@@ -600,7 +625,7 @@ void cOutput::drawObjectsToScreen()
                 case OBJ_TYPE_BUILDING_ACCESS:
                 case OBJ_TYPE_BUILDING_WALL:
                 {
-                    Building = pMapObj->getMap(i,j)->getContainBuilding();
+                    Building = pGameModel->getMap(i,j)->getContainBuilding();
                     objtype = Building->getType();
                     unitowner = Building->getOwner();
 
@@ -617,8 +642,8 @@ void cOutput::drawObjectsToScreen()
                     }
                     takeX = normPosX*TILE_WIDTH;
                     takeY = normPosY*TILE_WIDTH;
-                    drawToX = (i-screenX)*TILE_WIDTH;
-                    drawToY = (j-screenY)*TILE_HEIGHT;
+                    drawToX = (i-pScrollInputs->screenX)*TILE_WIDTH;
+                    drawToY = (j-pScrollInputs->screenY)*TILE_HEIGHT;
                     cSurface::Draw(mScreen,Object,drawToX,drawToY,takeX,takeY,TILE_WIDTH,TILE_HEIGHT);
                     Error2("Drawing Building ",drawToX);
 
@@ -628,7 +653,7 @@ void cOutput::drawObjectsToScreen()
                 {
                     if(sightMask[i][j] >= -1)
                     {
-                        Building = pMapObj->getMap(i,j)->getContainBuilding();
+                        Building = pGameModel->getMap(i,j)->getContainBuilding();
                         objtype = Building->getType();
                         unitowner = Building->getOwner();
 
@@ -645,8 +670,8 @@ void cOutput::drawObjectsToScreen()
                         }
                         takeX = normPosX*TILE_WIDTH;
                         takeY = normPosY*TILE_WIDTH;
-                        drawToX = (i-screenX)*TILE_WIDTH;
-                        drawToY = (j-screenY)*TILE_HEIGHT;
+                        drawToX = (i-pScrollInputs->screenX)*TILE_WIDTH;
+                        drawToY = (j-pScrollInputs->screenY)*TILE_HEIGHT;
                         cSurface::Draw(mScreen,Object,drawToX,drawToY,takeX,takeY,TILE_WIDTH,TILE_HEIGHT);
                     }
                 }
@@ -656,7 +681,7 @@ void cOutput::drawObjectsToScreen()
                     if(sightMask[i][j] >= -1)
                     {
                         //read the Unit
-                        Unit = pMapObj->getMap(i,j)->getContainUnit();
+                        Unit = pGameModel->getMap(i,j)->getContainUnit();
                         //read the obj and actiontype
                         objtype    = Unit->getType();
                         actiontype = Unit->getActionType();
@@ -668,8 +693,8 @@ void cOutput::drawObjectsToScreen()
                         //draw it to the screen according to its animationstep
                         offsetX = Unit->getOffsetX();
                         offsetY = Unit->getOffsetY();
-                        drawToX = (i-screenX)*TILE_WIDTH+offsetX;
-                        drawToY = (j-screenY)*TILE_HEIGHT+offsetY;
+                        drawToX = (i-pScrollInputs->screenX)*TILE_WIDTH+offsetX;
+                        drawToY = (j-pScrollInputs->screenY)*TILE_HEIGHT+offsetY;
                         takeX = (Unit->getDirection()-1)*TILE_WIDTH;
                         takeY = (Unit->getAnimStepNow())*TILE_HEIGHT;
                         cSurface::Draw(mScreen,Object,drawToX,drawToY,takeX,takeY,TILE_WIDTH,TILE_HEIGHT);
@@ -686,7 +711,7 @@ void cOutput::drawObjectsToScreen()
                 case OBJ_TYPE_OBSTACLE:
                 {
                     //read the Unit
-                    Obstacle = pMapObj->getMap(i,j)->getContainObstacle();
+                    Obstacle = pGameModel->getMap(i,j)->getContainObstacle();
                     //read the obj and actiontype
                     objtype    = Obstacle->getType();
 
@@ -694,8 +719,8 @@ void cOutput::drawObjectsToScreen()
                     Object = ObstacleGraphics[objtype];
 
                     //draw it to the screen TODO rotation and animationstep
-                    drawToX = (i-screenX)*TILE_WIDTH;
-                    drawToY = (j-screenY)*TILE_HEIGHT;
+                    drawToX = (i-pScrollInputs->screenX)*TILE_WIDTH;
+                    drawToY = (j-pScrollInputs->screenY)*TILE_HEIGHT;
                     cSurface::Draw(mScreen,Object,drawToX,drawToY);
                     break;
                 }
@@ -800,8 +825,8 @@ void cOutput::drawScreenRectangleToMinimap()
 {
     SDL_Rect minimaprect;
 
-    minimaprect.x = MINIMAP_X + MINIMAP_TILE_WIDTH*screenX;
-    minimaprect.y = MINIMAP_Y + MINIMAP_TILE_HEIGHT*screenY;
+    minimaprect.x = MINIMAP_X + MINIMAP_TILE_WIDTH*pScrollInputs->screenX;
+    minimaprect.y = MINIMAP_Y + MINIMAP_TILE_HEIGHT*pScrollInputs->screenY;
     minimaprect.w = SCR_TILE_WIDTH*MINIMAP_TILE_WIDTH;
     minimaprect.h = SCR_TILE_HEIGHT*MINIMAP_TILE_HEIGHT;
 
@@ -822,12 +847,13 @@ void cOutput::drawSightmask()
                 Minmap = sightMaskMinimapGraphics;
                 cSurface::Draw(mScreen,Minmap,MINIMAP_X + MINIMAP_TILE_WIDTH*i,MINIMAP_Y + MINIMAP_TILE_HEIGHT*j);
                 //if on the screen draw a tile there
-                if(i>=screenX && i < screenX+SCR_TILE_WIDTH && j>=screenY && j<screenY+SCR_TILE_HEIGHT )
+                if(i>=pScrollInputs->screenX && i < pScrollInputs->screenX+SCR_TILE_WIDTH
+                   && j>=pScrollInputs->screenY && j<pScrollInputs->screenY+SCR_TILE_HEIGHT )
                 {
                     //Graphic of the corresponding field
                     Tile = sightMaskGraphics;
                     //Draw it at the right spot
-                    cSurface::Draw(mScreen,Tile,(i-screenX)*TILE_WIDTH,(j-screenY)*TILE_HEIGHT);
+                    cSurface::Draw(mScreen,Tile,(i-pScrollInputs->screenX)*TILE_WIDTH,(j-pScrollInputs->screenY)*TILE_HEIGHT);
                 }
             }
 
@@ -973,7 +999,7 @@ void cOutput::drawUnitDescription(cUnit* selectedUnit)
 void cOutput::drawUnitMinipictures()
 {
     cSelection* thisSel;
-    thisSel = selListHead;
+    thisSel = selectionListHead;
     SDL_Surface* minpic;
     cUnit* thisUnit;
     int nowX,nowY;
@@ -987,7 +1013,7 @@ void cOutput::drawUnitMinipictures()
     rect.w = MINIPIC_WIDTH;
     rect.h = MINIPIC_HEIGHT;
     //cycle through the units
-    for(int i=0;i<selectedUnitNumber && i<MINIPIC_COLUMNS*MINIPIC_ROWS;i++)
+    for(int i=0;i<selectedNumber && i<MINIPIC_COLUMNS*MINIPIC_ROWS;i++)
     {
         int j = i%MINIPIC_COLUMNS;
         //calculate the x where the minipic will be drawn to
@@ -1112,7 +1138,7 @@ void cOutput::drawEntities()
     SDL_Surface* Object;
     int offsetX,offsetY;
     int drawToX,drawToY,takeX,takeY;
-    for(int i=0;i<numEnt;i++)
+    for(int i=0;i<pGameModel->getNumberOfEntities();i++)
     {
         //read the Unit
         Entity = pGameModel->getEntity(i);
@@ -1125,17 +1151,15 @@ void cOutput::drawEntities()
         //draw it to the screen according to its animationstep
         offsetX = Entity->getOffsetX();
         offsetY = Entity->getOffsetY();
-        drawToX = (Entity->getX()-screenX)*TILE_WIDTH+offsetX;
-        drawToY = (Entity->getY()-screenY)*TILE_HEIGHT+offsetY;
+        drawToX = (Entity->getX()-pScrollInputs->screenX)*TILE_WIDTH+offsetX;
+        drawToY = (Entity->getY()-pScrollInputs->screenY)*TILE_HEIGHT+offsetY;
         takeX = 0; // TODO direction (Entity->getDirection()-1)*TILE_WIDTH;
         takeY = (Entity->getAnimStepNow())*TILE_HEIGHT;
         cSurface::Draw(mScreen,Object,drawToX,drawToY,takeX,takeY,TILE_WIDTH,TILE_HEIGHT);
     }
 }
 
-void cOutput::drawFrameBattleGameScreen(Uint32 ticks,int mouseX,int mouseY,int Units[MAX_UNITS],int placeNum
-                                        ,bool clickReady,int startSector[START_SECTOR_X_MAX][START_SECTOR_Y_MAX]
-                                        ,int placeUnit)
+void cOutput::drawFrameBattleGameScreen(Uint32 ticks)
 {
    //Draw HUD
     cSurface::Draw(mScreen,BattleGameBackground,0,0);
@@ -1146,9 +1170,9 @@ void cOutput::drawFrameBattleGameScreen(Uint32 ticks,int mouseX,int mouseY,int U
     }
     for(int i=0;i<UNIT_TYPE_NUMBER;i++)
     {
-        if(Units[i] > 0)
+        if(pBattleGameModel->readyUnits[i] > 0)
         {
-            if(i==placeNum)
+            if(i==pBattleGameInputs->placeUnit)
             {
                 cSurface::Draw(mScreen,UnitMiniPic[i][thisOwner][1],BATTLE_GAME_UNUSED_X + i*MINIPIC_WIDTH,BATTLE_GAME_UNUSED_Y);
             }
@@ -1165,7 +1189,7 @@ void cOutput::drawFrameBattleGameScreen(Uint32 ticks,int mouseX,int mouseY,int U
         }
 
     }
-    if(clickReady)
+    if(pBattleGameModel->ready)
     {
         cSurface::Draw(mScreen,readyButton[1],BATTLE_GAME_GOBUTTON_X,BATTLE_GAME_GOBUTTON_Y);
     }
@@ -1178,17 +1202,17 @@ void cOutput::drawFrameBattleGameScreen(Uint32 ticks,int mouseX,int mouseY,int U
     {
         for(int j=0;j<START_SECTOR_Y;j++)
         {
-            if(startSector[i][j] == -2)
+            if(pBattleGameModel->startSector[i][j] == -2)
             {
                 cSurface::Draw(mScreen,blockedSector,BATTLE_GAME_SECTOR_X+i*TILE_WIDTH,BATTLE_GAME_SECTOR_Y+j*TILE_HEIGHT);
             }
-            if(startSector[i][j] == -1)
+            if(pBattleGameModel->startSector[i][j] == -1)
             {
                 cSurface::Draw(mScreen,EmptySector,BATTLE_GAME_SECTOR_X+i*TILE_WIDTH,BATTLE_GAME_SECTOR_Y+j*TILE_HEIGHT);
             }
-            if(startSector[i][j] >= 0)
+            if(pBattleGameModel->startSector[i][j] >= 0)
             {
-                cSurface::Draw(mScreen,UnitGraphics[startSector[i][j]][ACTION_REST][thisOwner]
+                cSurface::Draw(mScreen,UnitGraphics[pBattleGameModel->startSector[i][j]][ACTION_REST][thisOwner]
                                ,BATTLE_GAME_SECTOR_X+i*TILE_WIDTH,BATTLE_GAME_SECTOR_Y+j*TILE_HEIGHT
                                ,4*TILE_WIDTH,0,TILE_WIDTH,TILE_HEIGHT);
 
@@ -1196,32 +1220,37 @@ void cOutput::drawFrameBattleGameScreen(Uint32 ticks,int mouseX,int mouseY,int U
         }
     }
 
-    if(placeUnit != -1)
+    if(pBattleGameInputs->placeUnit != -1)
     {
-        cSurface::Draw(mScreen,UnitPicture[placeUnit][thisOwner],BATTLE_GAME_DESCRIPTION_X,BATTLE_GAME_DESCRIPTION_Y);
+        cSurface::Draw(mScreen,UnitPicture[pBattleGameInputs->placeUnit][thisOwner],BATTLE_GAME_DESCRIPTION_X,BATTLE_GAME_DESCRIPTION_Y);
     }
 
     cSurface::Draw(mScreen,mMinimap,BATTLE_GAME_MINIMAP_X,BATTLE_GAME_MINIMAP_Y);
 
     // Draw the cursor
-    cSurface::Draw(mScreen,cursorGraphicBattleGame,mouseX+CURSOR_OFFSET_X,mouseY+CURSOR_OFFSET_Y);
+    cSurface::Draw(mScreen,cursorGraphicBattleGame,pMousePosition->X+CURSOR_OFFSET_X,pMousePosition->Y+CURSOR_OFFSET_Y);
 
     //Show the new screen
     SDL_Flip(mScreen);
 }
 
-void setDrawAoe(int aoe)
+void cOutput::setDrawAoe(int aoe)
 {
     drawAoe = aoe;
 }
 
-void setSelection(cSelection* selectionListH, int selectedNum, int selectedBui, int typeNum, int priorizedNum)
+void cOutput::setSelection(cSelection* selectionListH, int selectedNum, int selectedBui, int typeNum, int priorizedNum)
 {
     selectionListHead = selectionListH;
     selectedNumber = selectedNum;
     selectedBuildings = selectedBui;
     typeNumbers = typeNum;
     priorizedNumber = priorizedNum;
+}
+
+void cOutput::setActiveScreen(int scr)
+{
+    activeScreen = scr;
 }
 
 bool cOutput::CleanUpVideo()

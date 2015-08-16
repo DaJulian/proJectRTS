@@ -4,9 +4,10 @@
 #include "../control/cSelection.h"
 #include "cSurface.h"
 #include "../model/cGameModel.h"
+#include "../control/cBattleGame.h"
 #include "cInput.h"
 
-class cOutput : public cInput
+class cOutput
 {
     protected:
         //Screen SUrface
@@ -63,6 +64,7 @@ class cOutput : public cInput
 
         //Map Object
         cGameModel* pGameModel;
+        sBattleGameModel* pBattleGameModel;
 
         //fog of war mask
         int sightMask[MAX_WORLD_WIDTH][MAX_WORLD_HEIGHT];
@@ -93,6 +95,11 @@ class cOutput : public cInput
         SDL_Surface* forbiddenMask;
         SDL_Surface* readyButton[2];
 
+        sMousePosition* pMousePosition;
+        sScrollInputs* pScrollInputs;
+        sBattleGameInputs* pBattleGameInputs;
+        sUnitSelectionInputs* pUnitSelectionInputs;
+
         cSelection* selectionListHead;
         int selectedNumber;
         int selectedBuildings;
@@ -101,15 +108,16 @@ class cOutput : public cInput
 
         int drawAoe;
 
+        int activeScreen;
     public:
         cOutput();
 
         bool drawFrame(Uint32 tick);
-        void drawFrameBattleGameScreen(Uint32 ticks,int mouseX,int mouseY,int Units[MAX_UNITS],int placeNum
-                                       ,bool clickReady,int startSector[START_SECTOR_X_MAX][START_SECTOR_Y_MAX]
-                                       ,int placeUnit);
+        void drawFrameUnitSelection(Uint32 ticks);
+        void drawFrameBattleGameScreen(Uint32 ticks);
 
-        bool InitVideo(cGameModel* pMod,int own);
+        bool InitVideo(cGameModel* pMod, sBattleGameModel* pBaMo, int own
+                       , sMousePosition* moupo, sScrollInputs* scrollolol, sBattleGameInputs* Bagainp, sUnitSelectionInputs* UselInp);
         bool CleanUpVideo();
 
         void InitMinimap();
@@ -144,6 +152,8 @@ class cOutput : public cInput
         void setDrawAoe(int aoe);
 
         void setSelection(cSelection* selectionListH, int selectedNum, int selectedBui, int typeNum, int priorizedNum);
+
+        void setActiveScreen(int scr);
 };
 
 #endif // COUTPUT_H_INCLUDED

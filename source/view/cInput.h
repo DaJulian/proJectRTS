@@ -1,166 +1,170 @@
 #ifndef CINPUT_H_INCLUDED
 #define CINPUT_H_INCLUDED
 
-#include "cEvent.h"
+#include "cEventHandler.h"
 #include "cSurface.h"
 #include "../model/cWorldMap.h"
 
-class cInput : public cEvent
+struct sScrollInputs
 {
-    protected:
-        //Switch to terminate the game
-        bool bTerminateGame;
+    int screenX;
+    int screenY;
 
-    	//Mouse position
-    	int MouseX;
-    	int MouseY;
+    int screenJumpRelativeX;
+    int screenJumpRelativeY;
+};
 
-    	//Scroll Speeds
-    	int SCROLL_SPEED_KEYBOARD;
-    	int SCROLL_SPEED_MOUSE;
-    	int DOUBLE_BUTTON_TIME;
+struct sUnitSelectionInputs
+{
+    bool doDrawRect;
 
-    	//Time since last scroll
-    	int ScrollDelayX;
-        int ScrollDelayY;
-        int doubleButton;
+    //Command bools
+    bool doMove;
+    bool attackMove;
+    bool stopMove;
 
-    	// List of the MouseButtons
-    	bool LMButton;
-    	bool blockLeft;
-        bool RMButton;
-        bool MMButton;
+    int moveCommandX;
+    int moveCommandY;
 
-        //
-        bool doDrawRect;
+    //set the selection to a certain group
+    bool SetGroup;
+    int GroupNumber;
+    bool GetGroup;
+    bool JumpGroup;
 
-        //Command bools
-        bool doMove;
-        bool attackMove;
-        bool stopMove;
+    bool selMiniPic;
+    int selMiniPicNumber;
 
-        int moveCommandX;
-        int moveCommandY;
+    int changeAbility;
 
-        //set the selection to a certain group
-        bool SetGroup;
-        int GroupNumber;
-        bool GetGroup;
-        bool JumpGroup;
+    int castMove;
 
-        bool selMiniPic;
-        int selMiniPicNumber;
+    //Draw a rectangle for selection
+    SDL_Rect DrawRect;
 
-        int changeAbility;
+    //Select Inside this rectangle
+    bool bSelect;
+    SDL_Rect SelectRect;
+    SDL_Rect SelectSpecificRect;
+    bool selectOnlySpecificUnit;
+    int specificUnitX,specificUnitY;
+    bool rightClickGrid;
 
-        int castMove;
+    bool doSelectionCycle;
 
-        //Coordinates of Mousedown
-        int LBcX;
-        int LBcY;
-        int LmXd;
-        int LmYd;
-        int RBcX;
-        int RBcY;
+    bool onlyAddSelection;
 
-        //Draw a rectangle for selection
-        SDL_Rect DrawRect;
+    int cursorType;
+};
 
-        //Select Inside this rectangle
-        bool bSelect;
-        SDL_Rect SelectRect;
-        SDL_Rect SelectSpecificRect;
-        bool selectOnlySpecificUnit;
-        int specificUnitX,specificUnitY;
-        bool rightClickGrid;
+struct sBattleGameInputs
+{
+    //battle game input Variables
+    bool clickBattleGameReady;
 
-        bool doSelectionCycle;
+    int BuyUnits;
+    int SellUnits;
+    int placeUnit;
+    int placeUnitX;
+    int placeUnitY;
+    int removeUnitX;
+    int removeUnitY;
+};
 
-        // List of the keys
-        bool keyA;
-        bool keyM;
-        bool keyS;
-        bool keyEscape;
-        bool keyUp;
-        bool keyDown;
-        bool keyLeft;
-        bool keyRight;
-        bool keyControl;
-        bool keyTab;
-        bool keyNum[10];
-        bool keyAlt;
-        bool keyAbility[4];
-        bool keyShift;
+struct sMousePosition
+{
+    int X;
+    int Y;
+};
 
-        //Coordinates of Players Screen
-        int screenX;
-        int screenY;
+class cInput
+{
+protected:
+    //Switch to terminate the game
+    bool bTerminateGame;
 
-        int screenJumpRelativeX;
-        int screenJumpRelativeY;
+    sBattleGameInputs battleGameInputs;
+    sScrollInputs scrollInputs;
+    sUnitSelectionInputs unitSelectionInputs;
+    sMousePosition mousePosition;
 
-        //Cursortype
-        int cursorType;
+    //Scroll Speeds
+    int SCROLL_SPEED_KEYBOARD;
+    int SCROLL_SPEED_MOUSE;
+    int DOUBLE_BUTTON_TIME;
 
-        //battle game input Variables
-        bool clickBattleGameReady;
+    //Time since last scroll
+    int ScrollDelayX;
+    int ScrollDelayY;
+    int doubleButton;
 
-        int activeScreen;
-    public:
-        cInput();
+    bool blockLeft;
+    bool LastLeftMouseDown;
+    int LeftClickPositionX;
+    int LeftClickPositionY;
 
-        bool InitInput();
-        bool DoInput(Uint32 ticks);
-        void DoInputBattleGame(Uint32 ticks);//,int* BuyUnits,int* SellUnits,int* placeUnit, int* placeUnitX
-                               //,int* placeUnitY,int* removeUnitX, int* removeUnitY);
-        void DoInputScroll(Uint32 ticks);
-        void DoInputUnitSelection();
-        void DoInputBuildingSelection();
-        void DoInputInnScreen();
+    bool LastRightMouseDown;
+    int RightClickPositionX;
+    int RightClickPositionY;
 
-        void applyScreenJump();
-        void tickDownScrollDelay(Uint32 ticks);
-        void handleScrolling();
-        void handleKeyScrolling();
-        void handleMouseScrolling();
+    int activeScreen;
 
-        void guaranteeToBeOnMap();
+    cEventHandler EventHandlerObject;
+public:
+    cInput();
 
-        void handleAttackMove();
-        void handleCastCommand();
+    bool InitInput();
+    bool DoInput(Uint32 ticks);
 
-        void handleLeftClickOnMap();
-        void handleLeftClickOnHud();
+    void DoInputBattleGame(Uint32 ticks);
+    void DoInputScroll(Uint32 ticks);
+    void DoInputUnitSelection();
+    void DoInputBuildingSelection();
+    void DoInputInnScreen();
 
-        void handleLeftClickOnMinimap();
-        void handleLeftClickOnRightHud();
+    bool checkNoAttackOrCast();
 
-        void handleRightClickOnMap();
-        void handleRightClickOnHud();
+    void updateMouseActionsUnitSelection();
 
-        void handleRightClickOnMinimap();
-        void handleRightClickOnRightHud();
+    void updateMouseActionsBattleGame();
 
-        void ClickGridLeft();
-        void ClickGridRight();
+    void applyScreenJump();
+    void tickDownScrollDelay(Uint32 ticks);
+    void handleScrolling();
+    void handleKeyScrolling();
+    void handleMouseScrolling();
 
-        bool CleanUpInput();
+    void guaranteeToBeOnMap();
 
-        //virtuals already definded in cEvent
-        //genereal event-Managing function, calls the corresponding function, depending on the event
-        bool UseEvent(SDL_Event* Event);
+    void handleAttackMove();
+    void handleCastCommand();
 
-        //handling Key events
-        void InpKeyDown(SDLKey sym, SDLMod mod, Uint16 unicode);
-        void InpKeyUp(SDLKey sym, SDLMod mod, Uint16 unicode);
+    void handleLeftClickOnMap();
+    void handleLeftClickOnHud();
 
-        //hanlding Mosue movement
-        void InpMouseMove(int mX, int mY, int relX, int relY, bool LeftB, bool RightB, bool MiddleB);
+    void handleLeftClickOnMinimap();
+    void handleLeftClickOnRightHud();
 
-        //handling mouse button inputs
-        void InpMouseButtonDown(Uint8 button,int mX, int mY);
-        void InpMouseButtonUp(Uint8 button,int mX, int mY);
-    private:
+    void handleRightClickOnMap();
+    void handleRightClickOnHud();
+
+    void handleRightClickOnMinimap();
+    void handleRightClickOnRightHud();
+
+    void ClickGridLeft();
+    void ClickGridRight();
+
+    sBattleGameInputs* getBattleGameInputs();
+    sScrollInputs* getScrollInputs();
+    sUnitSelectionInputs* getUnitSelectionInputs();
+    sMousePosition* getMousePosition();
+
+    void setActiveScreen(int scr);
+
+    bool* checkTerminateInput();
+
+    bool CleanUpInput();
+private:
 };
 
 #endif // CINPUT_H_INCLUDED

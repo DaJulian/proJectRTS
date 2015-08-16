@@ -41,12 +41,10 @@ bool cFramework::InitFramework()
     if((controlObject.InitControl(&viewObject, &gameModelObj)) == false){ Error("Error initializing Control Settings");return false;}
     controlObject.MapInit();
     //Initializing the output
-    if((viewObject.InitView(&gameModelObj, controlObject.getUser())) == false){ Error("Error initializing view Settings");return false;}
+    if((viewObject.InitView(&gameModelObj,battleGameObject.getBattleGameModel(), controlObject.getUser())) == false){ Error("Error initializing view Settings");return false;}
 
-    cBattleGame.InitSettingsBattleGame(UnitMovementSpeed,health,mana,healthreg,manareg,damage
-                           ,sightRange,Armor,Magicarmor,tauntRange,sortPriority,NumberOfAblilites
-                           ,UnitCost,BuildingTime,attackSpeed,attackRange,ManaCost,UnitEntityType);
-    cBattleGame.InitBattleGame(thisUser,&MapObj);
+    battleGameObject.InitSettingsBattleGame(gameModelObj.getUnitSpecifications());
+    battleGameObject.InitBattleGame(controlObject.getUser(), gameModelObj.getMapObj(), viewObject.getBattleGameInputs());
 
     Error("all initialized");
 
@@ -62,7 +60,7 @@ bool cFramework::InitFramework()
 
 bool cFramework::Run()
 {
-    while(bRun)
+    while(controlObject.checkRunning())
     {
         //Calculating timedifference in this frame
         if((TimeThisFrame = SDL_GetTicks()) == false){ Error("Error getting system time"); break;}
@@ -84,17 +82,20 @@ bool cFramework::Run()
         Error("TimeLastFrame ",timtest );
         timtest = frameLength;
         Error("framelength ",timtest );
-        if(CONTROL_SETTINGS == MODE_REPLAY) bdoBattleGameScreen = false;
-        if(bdoBattleGameScreen == true)
+
+        if(CONTROL_SETTINGS == MODE_REPLAY) battleGameObject.setRun(false);
+        if(battleGameObject.checkRun())
         {
+            Error("Do Battle Game Frame");
             DoFrameBattleGame();
         }
         else
         {
-            if(bStartSignal == true && startSector[0][0] != -3)
+            sBattleGameModel* pMod = battleGameObject.getBattleGameModel();
+            if(pMod->ready && pMod->startSector[0][0] != -3)
             {
-                InitUnits(thisUser,startSector);
-                startSector[0][0] = -3;
+                controlObject.InitUnits(pMod->startSector);
+                pMod->startSector[0][0] = -3;
             }
             if (DoFrame() == false)
             {
@@ -120,14 +121,14 @@ bool cFramework::DoFrame()
     Error("DoDrawing");
     //if((drawFrame(frameLength,MouseX,MouseY,cursorType,screenX,screenY,&doDrawRect,&DrawRect,pListHead[0],selectedNumber[0],selectedBuildings[0],selectedTypes[0],priorizedNumber[0]
     //    ,EntityList,NumberOfEntities,drawAoe)) == false){ Error("Error drawing"); return false;}
-    if(!(viewObject.DoFrameView(frameLength))){Error("Error drawing and inputing");}
+    viewObject.DoFrameView(frameLength);
 
 
     //Mangae the actual game
     Error("DoControl");
     //if((DoControl(frameLength,screenX,screenY,&bTerminateGame,&bSelect, &selMiniPic,selMiniPicNumber, &SelectRect, &selectOnlySpecificUnit, &SelectSpecificRect, specificUnitX,specificUnitY, &doMove,&attackMove,&stopMove
     //              ,moveCommandX,moveCommandY,&GetGroup,&SetGroup,&JumpGroup,GroupNumber,&keyShift,&doSelectionCycle,&changeAbility,&castMove)) == false){ Error("Error In DoControl()"); return false;}
-    if(!(controlObject.DoControl(frameLength))){Error("Error drawing and inputing");}
+    if(!(controlObject.DoControl(frameLength, viewObject.checkTerminateInput()))){Error("Error drawing and inputing");}
 
     Error("all done");
     return 1;
@@ -135,37 +136,39 @@ bool cFramework::DoFrame()
 
 void cFramework::DoFrameBattleGame()
 {
-    DoBattleGameInput(frameLength,&BuyUnits,&SellUnits,&placeUnit,&placeUnitsX,&placeUnitsY,&removeUnitX,&removeUnitY);
-    if(bTerminateGame == true) bRun = false;
-    drawFrameBattleGameScreen(frameLength,MouseX,MouseY,readyUnits,placeUnit,ready,startSector,placeUnit);
-    if(DoFrameBattleGameScreen(frameLength,&clickBattleGameReady) == true)
+    //DoBattleGameInput(frameLength);
+    //if(bTerminateGame == true) bRun = false;
+    //drawFrameBattleGameScreen(frameLength);
+    viewObject.DoFrameView(frameLength);
+    if(battleGameObject.DoFrameBattleGameScreen(frameLength) == true)
     {
-        bdoBattleGameScreen = false;
+        sBattleGameModel* pMod = battleGameObject.getBattleGameModel();
+        battleGameObject.setRun(false);
         //Tell the server that the game is on
         if(CONTROL_SETTINGS == MODE_CLIENT)
         {
-            Command* newCommand;
-            newCommand = new Command;
-            newCommand->commandType = COMMAND_CLIENT_READY;
-            commandListObj.Add(newCommand);
+            controlObject.storeCommand(NULL, COMMAND_CLIENT_READY ,0,0,1);
         }
         if(CONTROL_SETTINGS == MODE_SINGPLAY)
         {
-            bStartSignal= true;
-            LoadStandardOpponent();
+            pMod->ready = true;
+            controlObject.LoadStandardOpponent();
         }
+        Error("battle game set ready");
+        viewObject.setActiveScreen(SCREEN_MAP_UNIT);
+        ///controlObject.setActiveScreen(SCREEN_MAP_UNIT);
     }
-    NetworkManage(TimeThisFrame,&netPackToSend ,&netPackToStrip);
+    ///controlObject.NetworkManage(TimeThisFrame, &netPackToSend ,&netPackToStrip);
 }
 
 bool cFramework::CleanUpFramework()
 {
     //Initializing the output
-    if((CleanUpVideo()) == false){ Error("Error clearing Video Settings");return false;}
+    ///if((CleanUpVideo()) == false){ Error("Error clearing Video Settings");return false;}
     //Initializing the input
-    if((CleanUpInput()) == false){ Error("Error clearing Input Settings");return false;}
+    ///if((CleanUpInput()) == false){ Error("Error clearing Input Settings");return false;}
     //Initializing the input
-    if((CleanUpControl()) == false){ Error("Error clearing Control");return false;}
+    if((controlObject.CleanUpControl()) == false){ Error("Error clearing Control");return false;}
 
     //document program end
     Error("terminating program \n");

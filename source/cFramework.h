@@ -5,6 +5,7 @@
 #include "view/cOutput.h"
 #include "control/cControl.h"
 #include "control/cBattleGame.h"
+#include "model/cGameModel.h"
 
 class cFramework //: public cView, public cOutput, public cControl, public cBattleGame
 {

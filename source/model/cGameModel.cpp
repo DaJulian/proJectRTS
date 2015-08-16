@@ -1,5 +1,9 @@
 #include "cGameModel.h"
 
+cGameModel::cGameModel()
+{
+
+}
 
 void cGameModel::InitGameModel()
 {
@@ -39,22 +43,22 @@ void cGameModel::InitGameModel()
     {
         f.open(UNIT_SPEC_FILE[i].c_str());
         f >> garbage >> garbage >> garbage >> garbage >> garbage;
-        f >> garbage >> garbage >> UnitMovementSpeed[i];
-        f >> garbage >> garbage >> health[i];
-        f >> garbage >> garbage >> mana[i];
-        f >> garbage >> garbage >> healthreg[i];
-        f >> garbage >> garbage >> manareg[i];
-        f >> garbage >> garbage >> damage[i];
-        f >> garbage >> garbage >> sightRange[i];
-        f >> garbage >> garbage >> Armor[i];
-        f >> garbage >> garbage >> Magicarmor[i];
-        f >> garbage >> garbage >> tauntRange[i];
-        f >> garbage >> garbage >> sortPriority[i];
-        f >> garbage >> garbage >> UnitCost[i];
-        f >> garbage >> garbage >> BuildingTime[i];
-        f >> garbage >> NumberOfAblilites[i];
+        f >> garbage >> garbage >> unitSpecifications.UnitMovementSpeed[i];
+        f >> garbage >> garbage >> unitSpecifications.health[i];
+        f >> garbage >> garbage >> unitSpecifications.mana[i];
+        f >> garbage >> garbage >> unitSpecifications.healthreg[i];
+        f >> garbage >> garbage >> unitSpecifications.manareg[i];
+        f >> garbage >> garbage >> unitSpecifications.damage[i];
+        f >> garbage >> garbage >> unitSpecifications.sightRange[i];
+        f >> garbage >> garbage >> unitSpecifications.Armor[i];
+        f >> garbage >> garbage >> unitSpecifications.Magicarmor[i];
+        f >> garbage >> garbage >> unitSpecifications.tauntRange[i];
+        f >> garbage >> garbage >> unitSpecifications.sortPriority[i];
+        f >> garbage >> garbage >> unitSpecifications.UnitCost[i];
+        f >> garbage >> garbage >> unitSpecifications.BuildingTime[i];
+        f >> garbage >> unitSpecifications.NumberOfAblilites[i];
 
-        Error("Movement speed ",UnitMovementSpeed[i]);
+        /*Error("Movement speed ",UnitMovementSpeed[i]);
         Error("health  ",health[i]);
         Error("mana",mana[i]);
         Error("healthreg",healthreg[i]);
@@ -64,21 +68,21 @@ void cGameModel::InitGameModel()
         Error("Armor",Armor[i]);
         Error("Magicarmor",Magicarmor[i]);
         Error("tauntRange",tauntRange[i]);
-        Error("NumberOfAblilites",NumberOfAblilites[i]);
+        Error("NumberOfAblilites",NumberOfAblilites[i]);*/
 
-        for(int j=0;j<NumberOfAblilites[i];j++)
+        for(int j=0;j<unitSpecifications.NumberOfAblilites[i];j++)
         {
             f >> garbage >> garbage;
-            f >> garbage >> garbage >> attackSpeed[i][j];
-            f >> garbage >> garbage >> attackRange[i][j];
-            f >> garbage >> garbage >> UnitEntityType[i][j];
-            f >> garbage >> garbage >> ManaCost[i][j];
+            f >> garbage >> garbage >> unitSpecifications.attackSpeed[i][j];
+            f >> garbage >> garbage >> unitSpecifications.attackRange[i][j];
+            f >> garbage >> garbage >> unitSpecifications.UnitEntityType[i][j];
+            f >> garbage >> garbage >> unitSpecifications.ManaCost[i][j];
             f >> garbage;
 
-        Error("attackSpeed",attackSpeed[i][j]);
+        /*Error("attackSpeed",attackSpeed[i][j]);
         Error("attackRange",attackRange[i][j]);
         Error("ManaCost",ManaCost[i][j]);
-        Error("UnitEntityType",UnitEntityType[i][j]);
+        Error("UnitEntityType",UnitEntityType[i][j]);*/
         }
 
         f >> garbage >> garbage >> garbage >> garbage >> garbage >> garbage >> garbage ;
@@ -86,10 +90,10 @@ void cGameModel::InitGameModel()
         for(int j=0;j<NMBR_ACTIONS;j++)
         {
             f >> garbage;
-            f >> garbage >> UnitAnimSteps[i][j];
-            f >> garbage >> UnitAnimDuration[i][j];
+            f >> garbage >> unitSpecifications.UnitAnimSteps[i][j];
+            f >> garbage >> unitSpecifications.UnitAnimDuration[i][j];
             Error("Command ID j",j);
-            Error("UnitAnimDuration[i][j]",UnitAnimDuration[i][j]);
+            Error("UnitAnimDuration[i][j]",unitSpecifications.UnitAnimDuration[i][j]);
         }
         f.close();
     }
@@ -98,13 +102,13 @@ void cGameModel::InitGameModel()
     {
         f.open(BUILDING_SPEC_FILE[i].c_str());
         f >> garbage;
-        f >> BuildingSizeX[i] >> BuildingSizeY[i];
+        f >> buildingSpecifications.BuildingSizeX[i] >> buildingSpecifications.BuildingSizeY[i];
         f >> garbage;
         for(int j=0;j<BUILDING_MAX_WIDTH;j++)
         {
             for(int k=0;k<BUILDING_MAX_HEIGHT;k++)
             {
-                f >> BuildingLayoutStorgage[i][k][j];
+                f >> buildingSpecifications.BuildingLayoutStorgage[i][k][j];
             }
         }
         ///TODO READ STUFF
@@ -115,29 +119,29 @@ void cGameModel::InitGameModel()
     {
         f.open(ENTITY_SPEC_FILE[i].c_str());
         f >> garbage >> garbage >> garbage >> garbage >> garbage;
-        f >> garbage >> garbage >> EntitynumModifiers[i];
-        f >> garbage >> garbage >> AnimNumberOfSteps[i];
-        f >> garbage >> garbage >> AnimDuration[i];
-        f >> garbage >> garbage >> lifeTime[i];
-        f >> garbage >> garbage >> startaway[i];
+        f >> garbage >> garbage >> entitySpecifications.EntitynumModifiers[i];
+        f >> garbage >> garbage >> entitySpecifications.AnimNumberOfSteps[i];
+        f >> garbage >> garbage >> entitySpecifications.AnimDuration[i];
+        f >> garbage >> garbage >> entitySpecifications.lifeTime[i];
+        f >> garbage >> garbage >> entitySpecifications.startaway[i];
 
         Error(" ");
         Error(" Entity",i);
-        Error("EntitynumModifiers[i]",EntitynumModifiers[i]);
-        Error("AnimNumberOfSteps[i]",AnimNumberOfSteps[i]);
-        Error("AnimDuration[i]",AnimDuration[i]);
+        Error("EntitynumModifiers[i]",entitySpecifications.EntitynumModifiers[i]);
+        Error("AnimNumberOfSteps[i]",entitySpecifications.AnimNumberOfSteps[i]);
+        Error("AnimDuration[i]",entitySpecifications.AnimDuration[i]);
         //Error("lifeTime[i]",lifeTime[i]);
         //Error("startaway[i]",startaway[i]);
 
-        for(int j=0;j<EntitynumModifiers[i];j++)
+        for(int j=0;j<entitySpecifications.EntitynumModifiers[i];j++)
         {
-            f >> garbage >> garbage >> modifierType[i][j];
-            f >> garbage >> garbage >> modifierValue[i][j];
+            f >> garbage >> garbage >> entitySpecifications.modifierType[i][j];
+            f >> garbage >> garbage >> entitySpecifications.modifierValue[i][j];
 
             Error(" ");
             Error(" modifier",j);
-            Error("modifierType[i][j]",modifierType[i][j]);
-            Error("modifierValue[i][j]",modifierValue[i][j]);
+            Error("modifierType[i][j]",entitySpecifications.modifierType[i][j]);
+            Error("modifierValue[i][j]",entitySpecifications.modifierValue[i][j]);
 
         }
         f.close();
@@ -152,13 +156,18 @@ void cGameModel::InitGameModel()
 }
 
 //routines to create Units on the map, dependent on S/C
-void cGameModel::CreateUnit(unsigned int type, int xPosi,int yPosi,int owner)
+void cGameModel::CreateUnit(unsigned int ID,unsigned int type, int xPosi,int yPosi,int owner)
 {
     cUnit* newUnit;
-    newUnit = new cUnit(checkFreeUnitID(),type,owner,MapObj.getMap(xPosi,yPosi),UnitAnimSteps[type],UnitAnimDuration[type]
-                        ,UnitMovementSpeed[type],attackSpeed[type],health[type],damage[type],sightRange[type]
-                        ,tauntRange[type],attackRange[type], UnitEntityType[type],ManaCost[type],NumberOfAblilites[type]
-                        ,mana[type],manareg[type],healthreg[type],Armor[type],Magicarmor[type],sortPriority[type],&MapObj);
+    newUnit = new cUnit(ID,type,owner,MapObj.getMap(xPosi,yPosi),unitSpecifications.UnitAnimSteps[type]
+                        ,unitSpecifications.UnitAnimDuration[type]
+                        ,unitSpecifications.UnitMovementSpeed[type],unitSpecifications.attackSpeed[type],
+                        unitSpecifications.health[type],unitSpecifications.damage[type],unitSpecifications.sightRange[type]
+                        ,unitSpecifications.tauntRange[type],unitSpecifications.attackRange[type],
+                        unitSpecifications.UnitEntityType[type],unitSpecifications.ManaCost[type],
+                        unitSpecifications.NumberOfAblilites[type]
+                        ,unitSpecifications.mana[type],unitSpecifications.manareg[type],unitSpecifications.healthreg[type],
+                        unitSpecifications.Armor[type],unitSpecifications.Magicarmor[type],unitSpecifications.sortPriority[type],&MapObj);
     //put it onto the ID List
     ///TODO dynamic ID system
     if(ID < MAX_UNITS)
@@ -169,20 +178,28 @@ void cGameModel::CreateUnit(unsigned int type, int xPosi,int yPosi,int owner)
     MapObj.getMap(xPosi,yPosi)->setContain(newUnit,NULL);
 }
 
+void cGameModel::DestroyUnit(cUnit* Unit)
+{
+    Error("killing unit");
+    Unit->getPosition()->setContain(NULL,NULL);
+    IDListed[Unit->getID()] = NULL;
+    delete Unit;
+}
+
 void cGameModel::CreateBuilding(int type,int xPosi, int yPosi, int owner)
 {
     cBuilding* newBuilding;
     buildingLayout lay;
-    for(int i=0;i<BuildingSizeX[type];i++)
+    for(int i=0;i<buildingSpecifications.BuildingSizeX[type];i++)
     {
-        for(int j=0;j<BuildingSizeY[type];j++)
+        for(int j=0;j<buildingSpecifications.BuildingSizeY[type];j++)
         {
-            lay.layoutSetting[i][j] = BuildingLayoutStorgage[type][i][j];
+            lay.layoutSetting[i][j] = buildingSpecifications.BuildingLayoutStorgage[type][i][j];
         }
     }
-    Error2("BuildingSizeX[type] ",BuildingSizeX[type]);
-    Error2("BuildingSizeY[type] ",BuildingSizeY[type]);
-    newBuilding = new cBuilding(type, owner, BuildingSizeX[type], BuildingSizeY[type]);
+    Error2("BuildingSizeX[type] ",buildingSpecifications.BuildingSizeX[type]);
+    Error2("BuildingSizeY[type] ",buildingSpecifications.BuildingSizeY[type]);
+    newBuilding = new cBuilding(type, owner, buildingSpecifications.BuildingSizeX[type], buildingSpecifications.BuildingSizeY[type]);
 
     newBuilding->initBuilding(&MapObj, xPosi, yPosi, lay);
 }
@@ -214,10 +231,10 @@ void cGameModel::createEntity(int Enttype,int srx, int sry, cTile* goalTile, cUn
     distanceY = (sry - goalY)*TILE_WIDTH;// + goalUnit->getOffsetY();
 
     //check if we have an AOE spell;
-    if(modifierType[Enttype][0] >= ENT_PROP_AOE && modifierType[Enttype][0] < ENT_PROP_SELF)
+    if(entitySpecifications.modifierType[Enttype][0] >= ENT_PROP_AOE && entitySpecifications.modifierType[Enttype][0] < ENT_PROP_SELF)
     {
         //if so get its range and find pixels within range
-        range = sqrt(modifierValue[Enttype][0]);
+        range = sqrt(entitySpecifications.modifierValue[Enttype][0]);
         rangeInt = int(range);
         for(int i=-rangeInt;i<=rangeInt;i++)
         {
@@ -229,9 +246,11 @@ void cGameModel::createEntity(int Enttype,int srx, int sry, cTile* goalTile, cUn
                 {
                     distanceX = (srx - goalX-i)*TILE_WIDTH;
                     distanceY = (sry - goalY-j)*TILE_HEIGHT;
-                    newEnt = new cEntity(srx,sry,MapObj.getMap(goalX+i,goalY+j),NULL,lifeTime[Enttype],Enttype,EntitynumModifiers[Enttype],
-                                    modifierType[Enttype],modifierValue[Enttype],AnimNumberOfSteps[Enttype],AnimDuration[Enttype]);
-                    newEnt->Init(&MapObj,startaway[Enttype],distanceX,distanceY,1);
+                    newEnt = new cEntity(srx,sry,MapObj.getMap(goalX+i,goalY+j),NULL,
+                                         entitySpecifications.lifeTime[Enttype],Enttype,entitySpecifications.EntitynumModifiers[Enttype],
+                                    entitySpecifications.modifierType[Enttype],entitySpecifications.modifierValue[Enttype],
+                                    entitySpecifications.AnimNumberOfSteps[Enttype],entitySpecifications.AnimDuration[Enttype]);
+                    newEnt->Init(&MapObj,entitySpecifications.startaway[Enttype],distanceX,distanceY,1);
                     NumberOfEntities++;
                     EntityList[NumberOfEntities-1] = newEnt;
                 }
@@ -240,9 +259,11 @@ void cGameModel::createEntity(int Enttype,int srx, int sry, cTile* goalTile, cUn
     }
     else
     {
-        newEnt = new cEntity(srx,sry,goalTile,goalUnit,lifeTime[Enttype],Enttype,EntitynumModifiers[Enttype],
-                         modifierType[Enttype],modifierValue[Enttype],AnimNumberOfSteps[Enttype],AnimDuration[Enttype]);
-        newEnt->Init(&MapObj,startaway[Enttype],distanceX,distanceY,1);
+        newEnt = new cEntity(srx,sry,goalTile,goalUnit,entitySpecifications.lifeTime[Enttype],
+                             Enttype,entitySpecifications.EntitynumModifiers[Enttype],
+                         entitySpecifications.modifierType[Enttype],entitySpecifications.modifierValue[Enttype],
+                         entitySpecifications.AnimNumberOfSteps[Enttype],entitySpecifications.AnimDuration[Enttype]);
+        newEnt->Init(&MapObj,entitySpecifications.startaway[Enttype],distanceX,distanceY,1);
         NumberOfEntities++;
         EntityList[NumberOfEntities-1] = newEnt;
     }
@@ -261,6 +282,11 @@ void cGameModel::removeEntity(int num)
     delete remEnt;
 }
 
+int cGameModel::getNumberOfEntities()
+{
+    return NumberOfEntities;
+}
+
 int cGameModel::checkFreeUnitID()
 {
     int ID=newestID;
@@ -274,6 +300,11 @@ int cGameModel::checkFreeUnitID()
         if(ID == MAX_UNITS) ID=0;
     }
     return -1;
+}
+
+void cGameModel::setNewestID(int id)
+{
+    newestID = id;
 }
 
 cWorldMap* cGameModel::getMapObj()
@@ -294,4 +325,18 @@ void cGameModel::InitMap(std::string filename, cChangeList* pChList)
 cEntity* cGameModel::getEntity(int num)
 {
     return EntityList[num];
+}
+
+sUnitSpecifications* cGameModel::getUnitSpecifications()
+{
+    return &unitSpecifications;
+}
+
+sBuildingSpecifications* cGameModel::getBuildingSpecifications()
+{
+    return &buildingSpecifications;
+}
+sEntitySpecifications* cGameModel::getEntitySpecifications()
+{
+    return &entitySpecifications;
 }

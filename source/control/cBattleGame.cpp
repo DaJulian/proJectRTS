@@ -1,59 +1,33 @@
 #include "cBattleGame.h"
 
-void cBattleGame::InitSettingsBattleGame(int UMS[UNIT_TYPE_MAX],int he[UNIT_TYPE_MAX],int ma[UNIT_TYPE_MAX],int hr[UNIT_TYPE_MAX],
-                        int mr[UNIT_TYPE_MAX],int da[UNIT_TYPE_MAX],int sR[UNIT_TYPE_MAX],int Ar[UNIT_TYPE_MAX],
-                        int Marm[UNIT_TYPE_MAX],
-                        int tR[UNIT_TYPE_MAX],int sP[UNIT_TYPE_MAX],int NOfAb[UNIT_TYPE_MAX],int UC[UNIT_TYPE_MAX],
-                        int BTime[UNIT_TYPE_MAX],int aSpeed[UNIT_TYPE_MAX][ABILITY_MAX],int aRange[UNIT_TYPE_MAX][ABILITY_MAX],
-                        int MCost[UNIT_TYPE_MAX][ABILITY_MAX],int UEType[UNIT_TYPE_MAX][ABILITY_MAX])
+void cBattleGame::InitSettingsBattleGame(sUnitSpecifications* pUnitSpec)
 {
-    for(int i=0;i<UNIT_TYPE_MAX;i++)
-    {
-        bGUnitMovementSpeed[i] = UMS[i];
-        bGhealth[i] = he[i];
-        bGmana[i] = ma[i];
-        bGhealthreg[i] = hr[i];
-        bGmanareg[i] = mr[i];
-        bGdamage[i] =da[i];
-        bGsightRange[i] = sR[i];
-        bGArmor[i] = Ar[i];
-        bGMagicarmor[i] = Marm[i];
-        bGtauntRange[i] = tR[i];
-        bGsortPriority[i] = sP[i];
-        bGNumberOfAblilites[i] = NOfAb[i];
-        bGUnitCost[i] = UC[i];
-        bGBuildingTime[i] = BTime[i];
-
-        for(int j=0;j<ENTITY_TYPE_MAX;j++)
-        {
-            bGattackSpeed[i][j] = aSpeed[i][j];
-            bGattackRange[i][j] = aRange[i][j];
-            bGManaCost[i][j] = MCost[i][j];
-            bGUnitEntityType[i][j] = UEType[i][j];
-        }
-    }
+    pUnitSpecifications = pUnitSpec;
 }
 
-void cBattleGame::InitBattleGame(int player,cWorldMap* pMap)
+void cBattleGame::InitBattleGame(int player,cWorldMap* pMap, sBattleGameInputs* batinp)
 {
     bdoBattleGameScreen = true;
-    ready = false;
-    timer = BATTLE_GAME_TIME;
-    BuyUnits = -1;
-    SellUnits = -1;
-    placeUnit = -1;
-    placeUnitsX = -1;
-    removeUnitX = -1;
+    battleGameModel.ready = false;
+    battleGameModel.timer = BATTLE_GAME_TIME;
+    pBattleGameInputs->BuyUnits = -1;
+    pBattleGameInputs->SellUnits = -1;
+    pBattleGameInputs->placeUnit = -1;
+    pBattleGameInputs->placeUnitX = -1;
+    pBattleGameInputs->removeUnitX = -1;
+
+    pBattleGameInputs = batinp;
+
     for(int i=0;i<MAX_UNITS;i++)
     {
-        readyUnits[i] = 0;
+        battleGameModel.readyUnits[i] = 0;
     }
 
     std::fstream f;
     std::string garbage;
     f.open(BATTLE_GAME_SETTINGS_FILE.c_str(), std::ios::in | std::ios::app);
 
-    f >> garbage >> money
+    f >> garbage >> battleGameModel.money
       >> garbage >> START_SECTOR_X
       >> garbage >> START_SECTOR_Y
       >> garbage >> PLAYER_1_START_X
@@ -65,19 +39,19 @@ void cBattleGame::InitBattleGame(int player,cWorldMap* pMap)
     {
         for(int j=0;j<START_SECTOR_Y;j++)
         {
-            startSector[i][j] = -1;
+            battleGameModel.startSector[i][j] = -1;
             if(player == 1)
             {
                 if(pMap->getMap(PLAYER_1_START_X+i,PLAYER_1_START_Y+j)->getContainObstacle()!=0)
                 {
-                    startSector[i][j] = -2;
+                    battleGameModel.startSector[i][j] = -2;
                 }
             }
             if(player == 2)
             {
                 if(pMap->getMap(PLAYER_2_START_X+i,PLAYER_2_START_Y+j)->getContainObstacle()!=0)
                 {
-                    startSector[i][j] = -2;
+                    battleGameModel.startSector[i][j] = -2;
                 }
             }
 
@@ -85,63 +59,78 @@ void cBattleGame::InitBattleGame(int player,cWorldMap* pMap)
     }
 }
 
-bool cBattleGame::DoFrameBattleGameScreen(Uint32 t,bool* setReady)
+bool cBattleGame::DoFrameBattleGameScreen(Uint32 t)
 {
-    timer -= t;
-    if(timer <= 0)
+    battleGameModel.timer -= t;
+    if(battleGameModel.timer <= 0)
     {
-        ready = true;
+        battleGameModel.ready = true;
     }
-    if(BuyUnits > -1)
+    if(pBattleGameInputs->BuyUnits > -1)
     {
-        if(money >= bGUnitCost[BuyUnits])
+        if(battleGameModel.money >= pUnitSpecifications->UnitCost[pBattleGameInputs->BuyUnits])
         {
-            readyUnits[BuyUnits]++;
-            money -= bGUnitCost[BuyUnits];
+            battleGameModel.readyUnits[pBattleGameInputs->BuyUnits]++;
+            battleGameModel.money -= pUnitSpecifications->UnitCost[pBattleGameInputs->BuyUnits];
         }
-        BuyUnits = -1;
+        pBattleGameInputs->BuyUnits = -1;
     }
-    if(SellUnits > -1)
+    if(pBattleGameInputs->SellUnits > -1)
     {
-        if(readyUnits[SellUnits] > 0)
+        if(battleGameModel.readyUnits[pBattleGameInputs->SellUnits] > 0)
         {
-            readyUnits[SellUnits]--;
-            money += bGUnitCost[SellUnits];
+            battleGameModel.readyUnits[pBattleGameInputs->SellUnits]--;
+            battleGameModel.money += pUnitSpecifications->UnitCost[pBattleGameInputs->SellUnits];
         }
-        SellUnits = -1;
+        pBattleGameInputs->SellUnits = -1;
     }
-    if(placeUnit > -1)
+    if(pBattleGameInputs->placeUnit > -1)
     {
-        if(readyUnits[placeUnit] > 0 )
+        if(battleGameModel.readyUnits[pBattleGameInputs->placeUnit] > 0 )
         {
-           if(placeUnitsX >= 0)
+           if(pBattleGameInputs->placeUnitX >= 0)
             {
-                if(startSector[placeUnitsX][placeUnitsY] == -1)
+                if(battleGameModel.startSector[pBattleGameInputs->placeUnitX][pBattleGameInputs->placeUnitY] == -1)
                 {
-                    startSector[placeUnitsX][placeUnitsY] = placeUnit;
-                    readyUnits[placeUnit]--;
+                    battleGameModel.startSector[pBattleGameInputs->placeUnitX][pBattleGameInputs->placeUnitY] = pBattleGameInputs->placeUnit;
+                    battleGameModel.readyUnits[pBattleGameInputs->placeUnit]--;
                 }
             }
         }
         else
         {
-            placeUnit = -1;
+            pBattleGameInputs->placeUnit = -1;
             //placeUnitsX = -1;
         }
     }
-    placeUnitsX = -1;
-    if(removeUnitX > 0)
+    pBattleGameInputs->placeUnitX = -1;
+    if(pBattleGameInputs->removeUnitX > 0)
     {
-        if(startSector[removeUnitX][removeUnitY] != -1)
+        if(battleGameModel.startSector[pBattleGameInputs->removeUnitX][pBattleGameInputs->removeUnitY] != -1)
         {
-            readyUnits[startSector[removeUnitX][removeUnitY]]++;
-            startSector[removeUnitX][removeUnitY] = -1;
+            battleGameModel.readyUnits[battleGameModel.startSector[pBattleGameInputs->removeUnitX][pBattleGameInputs->removeUnitY]]++;
+            battleGameModel.startSector[pBattleGameInputs->removeUnitX][pBattleGameInputs->removeUnitY] = -1;
         }
     }
-    removeUnitX = -1;
-    if(*setReady == true)
+    pBattleGameInputs->removeUnitX = -1;
+    if(pBattleGameInputs->clickBattleGameReady)
     {
-        ready = true;
+        battleGameModel.ready = true;
     }
-    return ready;
+
+    return battleGameModel.ready;
+}
+
+sBattleGameModel* cBattleGame::getBattleGameModel()
+{
+    return &battleGameModel;
+}
+
+bool cBattleGame::checkRun()
+{
+    return bdoBattleGameScreen;
+}
+void cBattleGame::setRun(bool ru)
+{
+    bdoBattleGameScreen = ru;
 }

@@ -71,9 +71,10 @@ public:
 
     cUnit* getUnitByID(unsigned int ID);
     int checkFreeUnitID();
+    void setNewestID(int id);
 
     void CreateUnit(unsigned int ID, unsigned int type, int xPosi,int yPosi, int owner);
-    void DestoryUnit(cUnit* Unit);
+    void DestroyUnit(cUnit* Unit);
 
     void CreateBuilding(int type, int xPosi, int yPosi, int owner);
 
@@ -84,6 +85,11 @@ public:
     cTile* getMap(int x, int y);
 
     cEntity* getEntity(int num);
+    int getNumberOfEntities();
+
+    sUnitSpecifications* getUnitSpecifications();
+    sBuildingSpecifications* getBuildingSpecifications();
+    sEntitySpecifications* getEntitySpecifications();
 };
 
 #endif // CGAMEMODEL_H_INCLUDED

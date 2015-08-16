@@ -81,6 +81,8 @@
 		<Unit filename="tools.h" />
 		<Unit filename="view/cEvent.cpp" />
 		<Unit filename="view/cEvent.h" />
+		<Unit filename="view/cEventHandler.cpp" />
+		<Unit filename="view/cEventHandler.h" />
 		<Unit filename="view/cInput.cpp" />
 		<Unit filename="view/cInput.h" />
 		<Unit filename="view/cOutput.cpp" />

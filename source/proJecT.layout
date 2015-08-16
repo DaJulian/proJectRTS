@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
-	<File name="cFramework.cpp" open="1" top="0" tabpos="11">
-		<Cursor position="1236" topLine="15" />
+	<File name="cFramework.cpp" open="1" top="1" tabpos="11">
+		<Cursor position="1333" topLine="30" />
 	</File>
 	<File name="cFramework.h" open="1" top="0" tabpos="10">
 		<Cursor position="433" topLine="0" />
 	</File>
 	<File name="control/cBattleGame.cpp" open="1" top="0" tabpos="50">
-		<Cursor position="2135" topLine="0" />
+		<Cursor position="4491" topLine="88" />
 	</File>
 	<File name="control/cBattleGame.h" open="1" top="0" tabpos="49">
-		<Cursor position="264" topLine="30" />
+		<Cursor position="161" topLine="0" />
 	</File>
 	<File name="control/cControl.cpp" open="1" top="0" tabpos="20">
-		<Cursor position="47298" topLine="1343" />
+		<Cursor position="20227" topLine="164" />
 	</File>
 	<File name="control/cControl.h" open="1" top="0" tabpos="19">
-		<Cursor position="2441" topLine="49" />
+		<Cursor position="2441" topLine="40" />
 	</File>
 	<File name="control/cPathFind.cpp" open="1" top="0" tabpos="27">
-		<Cursor position="9224" topLine="267" />
+		<Cursor position="9224" topLine="265" />
 	</File>
 	<File name="control/cPathFind.h" open="1" top="0" tabpos="26">
 		<Cursor position="291" topLine="0" />
 	</File>
 	<File name="control/cPathKnot.cpp" open="1" top="0" tabpos="25">
-		<Cursor position="9465" topLine="382" />
+		<Cursor position="9465" topLine="381" />
 	</File>
 	<File name="control/cPathKnot.h" open="1" top="0" tabpos="24">
 		<Cursor position="1752" topLine="0" />
@@ -47,13 +47,13 @@
 		<Cursor position="282" topLine="3" />
 	</File>
 	<File name="control/cSelectionControl.h" open="1" top="0" tabpos="17">
-		<Cursor position="806" topLine="3" />
+		<Cursor position="806" topLine="0" />
 	</File>
 	<File name="global.h" open="1" top="0" tabpos="14">
-		<Cursor position="4894" topLine="189" />
+		<Cursor position="4997" topLine="189" />
 	</File>
 	<File name="main.cpp" open="1" top="0" tabpos="1">
-		<Cursor position="122" topLine="32" />
+		<Cursor position="122" topLine="23" />
 	</File>
 	<File name="model/cAnimation.cpp" open="1" top="0" tabpos="29">
 		<Cursor position="1624" topLine="0" />
@@ -74,13 +74,13 @@
 		<Cursor position="1073" topLine="0" />
 	</File>
 	<File name="model/cGameModel.cpp" open="1" top="0" tabpos="57">
-		<Cursor position="9525" topLine="264" />
+		<Cursor position="9525" topLine="257" />
 	</File>
 	<File name="model/cGameModel.h" open="1" top="0" tabpos="56">
-		<Cursor position="2418" topLine="56" />
+		<Cursor position="2418" topLine="0" />
 	</File>
 	<File name="model/cObject.cpp" open="1" top="0" tabpos="4">
-		<Cursor position="328" topLine="13" />
+		<Cursor position="330" topLine="0" />
 	</File>
 	<File name="model/cObject.h" open="1" top="0" tabpos="13">
 		<Cursor position="128" topLine="0" />
@@ -104,7 +104,7 @@
 		<Cursor position="47324" topLine="268" />
 	</File>
 	<File name="model/cUnit.h" open="1" top="0" tabpos="22">
-		<Cursor position="3564" topLine="81" />
+		<Cursor position="3564" topLine="0" />
 	</File>
 	<File name="model/cWorldMap.cpp" open="1" top="0" tabpos="6">
 		<Cursor position="464" topLine="0" />
@@ -125,7 +125,7 @@
 		<Cursor position="115" topLine="0" />
 	</File>
 	<File name="netControl/oComdCntrList.cpp" open="1" top="0" tabpos="41">
-		<Cursor position="1595" topLine="54" />
+		<Cursor position="1595" topLine="47" />
 	</File>
 	<File name="netControl/oComdCntrList.h" open="1" top="0" tabpos="40">
 		<Cursor position="66" topLine="29" />
@@ -137,28 +137,28 @@
 		<Cursor position="111" topLine="0" />
 	</File>
 	<File name="tools.cpp" open="1" top="0" tabpos="48">
-		<Cursor position="1928" topLine="80" />
+		<Cursor position="1928" topLine="73" />
 	</File>
 	<File name="tools.h" open="1" top="0" tabpos="47">
 		<Cursor position="436" topLine="0" />
 	</File>
 	<File name="view/cEvent.cpp" open="1" top="0" tabpos="30">
-		<Cursor position="879" topLine="42" />
+		<Cursor position="879" topLine="33" />
 	</File>
 	<File name="view/cEvent.h" open="1" top="0" tabpos="34">
 		<Cursor position="528" topLine="0" />
 	</File>
-	<File name="view/cInput.cpp" open="1" top="1" tabpos="55">
-		<Cursor position="6398" topLine="74" />
+	<File name="view/cInput.cpp" open="1" top="0" tabpos="55">
+		<Cursor position="18800" topLine="586" />
 	</File>
 	<File name="view/cInput.h" open="1" top="0" tabpos="54">
-		<Cursor position="2507" topLine="96" />
+		<Cursor position="944" topLine="45" />
 	</File>
 	<File name="view/cOutput.cpp" open="1" top="0" tabpos="9">
-		<Cursor position="13144" topLine="0" />
+		<Cursor position="8291" topLine="244" />
 	</File>
 	<File name="view/cOutput.h" open="1" top="0" tabpos="8">
-		<Cursor position="4656" topLine="90" />
+		<Cursor position="182" topLine="0" />
 	</File>
 	<File name="view/cSurface.cpp" open="1" top="0" tabpos="31">
 		<Cursor position="1546" topLine="3" />
@@ -167,9 +167,9 @@
 		<Cursor position="140" topLine="0" />
 	</File>
 	<File name="view/cView.cpp" open="1" top="0" tabpos="2">
-		<Cursor position="116" topLine="0" />
+		<Cursor position="266" topLine="0" />
 	</File>
 	<File name="view/cView.h" open="1" top="0" tabpos="3">
-		<Cursor position="251" topLine="0" />
+		<Cursor position="309" topLine="0" />
 	</File>
 </CodeBlocks_layout_file>

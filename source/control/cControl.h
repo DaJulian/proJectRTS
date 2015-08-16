@@ -5,6 +5,7 @@
 #include "cReplay.h"
 #include "cPathFind.h"
 #include "../netControl/cNetControl.h"
+#include "../view/cView.h"
 #include "../model/cGameModel.h"
 
 class cControl : public cSelectionControl , public cNetControl
@@ -28,6 +29,9 @@ protected:
     cReplay ReplayObj;
 
     cView* pView;
+    sMousePosition* pMousePosition;
+    sUnitSelectionInputs* pUnitSelectionInputs;
+    sScrollInputs* pScrollInputs;
 
     //Identifiing number of the player
     int thisUser;
@@ -42,13 +46,13 @@ public:
     bool InitControl(cView* pViewObj, cGameModel* pGameModelObj);
 
     void MapInit();
-    void InitUnits(int User,int InitSector[START_SECTOR_X_MAX][START_SECTOR_Y_MAX]);
+    void InitUnits(int InitSector[START_SECTOR_X_MAX][START_SECTOR_Y_MAX]);
     void LoadStandardOpponent();
 
     /*bool DoControl(Uint32 t,int scrX,int scrY,bool* TermGame,bool* SelectTile, bool* SelectMiniPic, int PicNumber,
                    SDL_Rect* SelectRect,bool* selectSpecificUnit, SDL_Rect* SpecificUnitRect,int specX,int specY,bool* doMove,bool* doAttack,bool* doStop,int moveX,int moveY,
                    bool* getGroup,bool* setGroup,bool* jumpGroup, int GroupNumber, bool* ShiftDown,bool *doCycleSel, int* activateCommand, int *doCast);*/
-    bool DoControl(Uint32 t);
+    bool DoControl(Uint32 t, bool* TermGame);
 
     bool CleanUpControl();
 
@@ -73,6 +77,11 @@ public:
     void StripReceivedListClient();
 
     unsigned short int createNewPackID();
+
+    bool checkRunning();
+    void setRun(bool run);
+
+    void DestroyUnit(cUnit* Unit);
 
     int getUser();
 };
