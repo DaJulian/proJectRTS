@@ -258,6 +258,8 @@ bool cOutput::InitVideo(cGameModel* pMod, sBattleGameModel* BaMo, int own
     f >> garbage >> readyButtonFile[0];
     f >> garbage >> readyButtonFile[1];
 
+    Error("read all graphic settings files");
+
     //Initialize the Video Mode
     mScreen = 0;
 	mScreen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, COLOR_DEPTH, /*SDL_ANYFORMAT |*/SDL_SWSURFACE | SDL_DOUBLEBUF /*| SDL_FULLSCREEN*/);

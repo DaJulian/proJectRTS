@@ -3,13 +3,16 @@
 void cBattleGame::InitSettingsBattleGame(sUnitSpecifications* pUnitSpec)
 {
     pUnitSpecifications = pUnitSpec;
+    Error("initialized Unit specifications battle game");
 }
 
 void cBattleGame::InitBattleGame(int player,cWorldMap* pMap, sBattleGameInputs* batinp)
 {
+    Error("initializing battle game");
     bdoBattleGameScreen = true;
     battleGameModel.ready = false;
     battleGameModel.timer = BATTLE_GAME_TIME;
+    pBattleGameInputs = batinp;
     pBattleGameInputs->BuyUnits = -1;
     pBattleGameInputs->SellUnits = -1;
     pBattleGameInputs->placeUnit = -1;
@@ -35,6 +38,8 @@ void cBattleGame::InitBattleGame(int player,cWorldMap* pMap, sBattleGameInputs* 
       >> garbage >> PLAYER_2_START_X
       >> garbage >> PLAYER_2_START_Y;
 
+    Error("Player 2 start y", PLAYER_2_START_Y);
+
     for(int i=0;i<START_SECTOR_X;i++)
     {
         for(int j=0;j<START_SECTOR_Y;j++)
@@ -57,6 +62,7 @@ void cBattleGame::InitBattleGame(int player,cWorldMap* pMap, sBattleGameInputs* 
 
         }
     }
+    Error("done initializing battle game");
 }
 
 bool cBattleGame::DoFrameBattleGameScreen(Uint32 t)

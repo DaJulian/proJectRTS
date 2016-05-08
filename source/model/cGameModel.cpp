@@ -153,6 +153,7 @@ void cGameModel::InitGameModel()
     {
         EntityList[i] = NULL;
     }
+    Error("Game Model successfully initialized");
 }
 
 //routines to create Units on the map, dependent on S/C

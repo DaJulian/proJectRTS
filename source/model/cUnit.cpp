@@ -1531,7 +1531,7 @@ void cUnit::changeUnitGoal(cUnit* goaUn,cChangeList* pChList)
     goalUnit = goaUn;
 }
 
-void cUnit::changeMoveType(int type,cChangeList* pChList)
+void cUnit::changeMoveType(int type, cChangeList* pChList)
 {
     if(actionType != ACTION_DYING)
     {
@@ -1562,7 +1562,7 @@ void cUnit::changeMoveType(int type,cChangeList* pChList)
     }
 }
 
-void cUnit::changeHealth(int heal,cChangeList* pChList)
+void cUnit::changeHealth(int heal, cChangeList* pChList)
 {
     Change* newChange;
     newChange = new Change;
@@ -1587,7 +1587,7 @@ void cUnit::changeHealth(int heal,cChangeList* pChList)
     health = heal;
 }
 
-void cUnit::changeCreateEntity(int slot,cChangeList* pChList)
+void cUnit::changeCreateEntity(int slot, cChangeList* pChList)
 {
     Change* newChange;
     newChange = new Change;
@@ -1612,7 +1612,7 @@ void cUnit::changeCreateEntity(int slot,cChangeList* pChList)
     createEntity(slot);
 }
 
-void cUnit::changeMana(int man,cChangeList* pChList)
+void cUnit::changeMana(int man, cChangeList* pChList)
 {
     Change* newChange;
     newChange = new Change;
@@ -1635,7 +1635,7 @@ void cUnit::changeMana(int man,cChangeList* pChList)
     mana = man;
 }
 
-void cUnit::changeCastOnce(int cOne,cChangeList* pChList)
+void cUnit::changeCastOnce(int cOne, cChangeList* pChList)
 {
     Change* newChange;
     newChange = new Change;

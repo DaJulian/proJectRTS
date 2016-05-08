@@ -11,6 +11,7 @@ bool cView::InitView(cGameModel* pMod, sBattleGameModel* pBaMo, int thisUser)
     OutputObject.InitVideo(pMod, pBaMo, thisUser, InputObject.getMousePosition(),
                            InputObject.getScrollInputs(), InputObject.getBattleGameInputs(),
                            InputObject.getUnitSelectionInputs());
+    Error("view initialization done");
     return true;
 }
 

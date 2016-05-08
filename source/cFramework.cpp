@@ -43,6 +43,8 @@ bool cFramework::InitFramework()
     //Initializing the output
     if((viewObject.InitView(&gameModelObj,battleGameObject.getBattleGameModel(), controlObject.getUser())) == false){ Error("Error initializing view Settings");return false;}
 
+    Error("before initializing battelgame");
+
     battleGameObject.InitSettingsBattleGame(gameModelObj.getUnitSpecifications());
     battleGameObject.InitBattleGame(controlObject.getUser(), gameModelObj.getMapObj(), viewObject.getBattleGameInputs());
 

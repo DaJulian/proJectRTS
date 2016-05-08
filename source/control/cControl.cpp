@@ -158,7 +158,7 @@ void cControl::InitUnits(int InitSector[START_SECTOR_X_MAX][START_SECTOR_Y_MAX])
     }
 
     ///TODO just a test
-    pGameModel->CreateBuilding(0,6,6,1);
+    //pGameModel->CreateBuilding(0,6,6,1);
 
 }
 
